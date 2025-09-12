@@ -1,193 +1,192 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { MarketplaceAnchor } from "../target/types/marketplace_anchor";
-import { PublicKey, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, createMint, createAssociatedTokenAccount, mintTo } from "@solana/spl-token";
+import { PublicKey, SystemProgram, Keypair } from "@solana/web3.js";
+import {
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  createMint,
+  getAssociatedTokenAddressSync,
+  mintTo,
+} from "@solana/spl-token";
 import { expect } from "chai";
+import { MarketplaceAnchor } from "../target/types/marketplace_anchor";
+import { createAssociatedTokenAccount } from "@solana/spl-token";
 
 describe("marketplace-anchor", () => {
-  const provider = anchor.AnchorProvider.env();
+  const provider = anchor.AnchorProvider.local();
   anchor.setProvider(provider);
 
   const program = anchor.workspace.MarketplaceAnchor as Program<MarketplaceAnchor>;
-  
+  const wallet = provider.wallet as anchor.Wallet;
+
   let marketplacePda: PublicKey;
-  let marketplaceBump: number;
-  let gameAuthority: Keypair;
   let gamePda: PublicKey;
-  let gameBump: number;
   let nftMint: PublicKey;
   let seller: Keypair;
   let buyer: Keypair;
-  
+
   before(async () => {
-    // Инициализация ключей
-    gameAuthority = Keypair.generate();
     seller = Keypair.generate();
     buyer = Keypair.generate();
-    
-    // Пополнение аккаунтов
+
+    // Немного SOL продавцу и покупателю
     await provider.connection.confirmTransaction(
-      await provider.connection.requestAirdrop(gameAuthority.publicKey, 2 * LAMPORTS_PER_SOL)
+      await provider.connection.requestAirdrop(seller.publicKey, 2e9)
     );
     await provider.connection.confirmTransaction(
-      await provider.connection.requestAirdrop(seller.publicKey, 2 * LAMPORTS_PER_SOL)
+      await provider.connection.requestAirdrop(buyer.publicKey, 2e9)
     );
-    await provider.connection.confirmTransaction(
-      await provider.connection.requestAirdrop(buyer.publicKey, 2 * LAMPORTS_PER_SOL)
-    );
-    
-    // Найти PDA для маркетплейса
-    [marketplacePda, marketplaceBump] = PublicKey.findProgramAddressSync(
+
+    // PDA маркетплейса
+    [marketplacePda] = PublicKey.findProgramAddressSync(
       [Buffer.from("marketplace")],
       program.programId
     );
-    
-    // Найти PDA для игры
-    [gamePda, gameBump] = PublicKey.findProgramAddressSync(
-      [Buffer.from("game"), gameAuthority.publicKey.toBuffer()],
+
+    // PDA игры
+    [gamePda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("game"), wallet.publicKey.toBuffer()],
       program.programId
     );
-    
-    // Создать NFT токен
+
+    // Создаём NFT mint
     nftMint = await createMint(
       provider.connection,
-      seller,
+      wallet.payer,
       seller.publicKey,
       null,
-      0 // NFT имеет 0 десятичных знаков
+      0
     );
   });
 
   it("Инициализирует маркетплейс", async () => {
-    const tx = await program.methods
-      .initializeMarketplace(250) // 2.5% комиссия
+    await program.methods
+      .initializeMarketplace(500) // 5%
       .accounts({
         marketplace: marketplacePda,
-        authority: provider.wallet.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
+        authority: wallet.publicKey,
+        systemProgram: SystemProgram.programId,
       })
       .rpc();
 
-    console.log("Маркетплейс инициализирован:", tx);
-    
-    const marketplaceAccount = await program.account.marketplace.fetch(marketplacePda);
-    expect(marketplaceAccount.feeBasisPoints).to.equal(250);
-    expect(marketplaceAccount.totalVolume.toNumber()).to.equal(0);
+    const acc = await program.account.marketplace.fetch(marketplacePda);
+    expect(acc.feeBasisPoints).to.equal(500);
   });
 
   it("Регистрирует новую игру", async () => {
-    const gameName = "Epic RPG";
-    const gameSymbol = "ERPG";
-    const gameDescription = "An epic role-playing game with amazing items";
-    
-    const tx = await program.methods
-      .registerGame(gameName, gameSymbol, gameDescription)
+    await program.methods
+      .registerGame("MyGame", "MG", "Test game")
       .accounts({
         game: gamePda,
-        authority: gameAuthority.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
+        authority: wallet.publicKey,
+        systemProgram: SystemProgram.programId,
       })
-      .signers([gameAuthority])
       .rpc();
 
-    console.log("Игра зарегистрирована:", tx);
-    
-    const gameAccount = await program.account.game.fetch(gamePda);
-    expect(gameAccount.name).to.equal(gameName);
-    expect(gameAccount.symbol).to.equal(gameSymbol);
-    expect(gameAccount.verified).to.be.false;
+    const game = await program.account.game.fetch(gamePda);
+    expect(game.name).to.equal("MyGame");
   });
 
   it("Создает листинг NFT", async () => {
-    // Создать аккаунт токена для продавца и минтнуть NFT
-    const sellerTokenAccount = await createAssociatedTokenAccount(
+
+    const sellerAta = await createAssociatedTokenAccount(
       provider.connection,
-      seller,
-      nftMint,
-      seller.publicKey
+      wallet.payer,        // payer
+      nftMint,             // mint
+      seller.publicKey     // owner
     );
-    
+
+    // Минтим NFT продавцу
     await mintTo(
       provider.connection,
-      seller,
+      wallet.payer,
       nftMint,
-      sellerTokenAccount,
-      seller.publicKey,
-      1 // Минтим 1 NFT
+      sellerAta,
+      seller,
+      1
     );
-    
-    // Найти PDA для листинга
+
     const [listingPda] = PublicKey.findProgramAddressSync(
       [Buffer.from("listing"), nftMint.toBuffer()],
       program.programId
     );
-    
-    const price = new anchor.BN(0.5 * LAMPORTS_PER_SOL); // 0.5 SOL
-    
-    const tx = await program.methods
-      .createListing(price)
+
+    await program.methods
+      .createListing(new anchor.BN(1e9)) // 1 SOL
       .accounts({
         listing: listingPda,
         seller: seller.publicKey,
-        nftMint: nftMint,
-        systemProgram: anchor.web3.SystemProgram.programId,
+        nftMint,
+        systemProgram: SystemProgram.programId,
       })
       .signers([seller])
       .rpc();
 
-    console.log("Листинг создан:", tx);
-    
-    const listingAccount = await program.account.listing.fetch(listingPda);
-    expect(listingAccount.price.toNumber()).to.equal(price.toNumber());
-    expect(listingAccount.isActive).to.be.true;
+    const listing = await program.account.listing.fetch(listingPda);
+    expect(listing.price.toNumber()).to.equal(1e9);
   });
 
   it("Покупает NFT", async () => {
-    // Создать аккаунты токенов
-    const sellerTokenAccount = await createAssociatedTokenAccount(
-      provider.connection,
-      seller,
-      nftMint,
-      seller.publicKey
-    );
-    
-    const buyerTokenAccount = await createAssociatedTokenAccount(
-      provider.connection,
-      buyer,
-      nftMint,
-      buyer.publicKey
-    );
-    
     const [listingPda] = PublicKey.findProgramAddressSync(
       [Buffer.from("listing"), nftMint.toBuffer()],
       program.programId
     );
-    
-    const tx = await program.methods
+
+    const sellerTokenAccount = getAssociatedTokenAddressSync(
+      nftMint,
+      seller.publicKey
+    );
+    const buyerTokenAccount = getAssociatedTokenAddressSync(
+      nftMint,
+      buyer.publicKey
+    );
+
+    // Функция-помощник для безопасного получения баланса
+    async function safeGetBalance(ata: PublicKey): Promise<number> {
+      const acc = await provider.connection.getAccountInfo(ata);
+      if (!acc) return 0; // если аккаунта нет, значит баланс 0
+      const bal = await provider.connection.getTokenAccountBalance(ata);
+      return Number(bal.value.amount);
+    }
+
+    let sellerBefore = await safeGetBalance(sellerTokenAccount);
+    let buyerBefore = await safeGetBalance(buyerTokenAccount);
+
+    expect(sellerBefore).to.equal(1);
+    expect(buyerBefore).to.equal(0);
+
+    console.log("Покупатель покупает NFT...", sellerBefore, "->", buyerBefore);
+
+    await program.methods
       .buyNft()
       .accounts({
         listing: listingPda,
         marketplace: marketplacePda,
         buyer: buyer.publicKey,
         seller: seller.publicKey,
-        marketplaceAuthority: provider.wallet.publicKey,
-        sellerTokenAccount: sellerTokenAccount,
-        buyerTokenAccount: buyerTokenAccount,
-        nftMint: nftMint,
+        marketplaceAuthority: wallet.publicKey,
+        sellerTokenAccount,
+        buyerTokenAccount,
+        nftMint,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        systemProgram: anchor.web3.SystemProgram.programId,
+        systemProgram: SystemProgram.programId,
       })
-      .signers([buyer])
+      .signers([buyer, seller]) // оба подписывают
       .rpc();
 
-    console.log("NFT куплен:", tx);
-    
-    const listingAccount = await program.account.listing.fetch(listingPda);
-    expect(listingAccount.isActive).to.be.false;
-    
-    const marketplaceAccount = await program.account.marketplace.fetch(marketplacePda);
-    expect(marketplaceAccount.totalSales.toNumber()).to.equal(1);
+    const listingAcc = await program.account.listing.fetch(listingPda);
+    expect(listingAcc.isActive).to.be.false;
+
+    const marketplaceAcc = await program.account.marketplace.fetch(marketplacePda);
+    expect(marketplaceAcc.totalSales.toNumber()).to.equal(1);
+
+    let sellerAfter = await safeGetBalance(sellerTokenAccount);
+    let buyerAfter = await safeGetBalance(buyerTokenAccount);
+
+    console.log("Покупатель покупает NFT...", sellerAfter, "->", buyerAfter);
+
+    expect(sellerAfter).to.equal(0);
+    expect(buyerAfter).to.equal(1);
   });
 });

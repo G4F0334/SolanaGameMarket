@@ -1,14 +1,14 @@
 use anchor_lang::prelude::*;
+use anchor_lang::system_program::{self, Transfer};
 use anchor_spl::token::{self, Token, TokenAccount, Mint};
 use anchor_spl::associated_token::AssociatedToken;
 
-declare_id!("5k9vS19CiM5ekXKiPwUjMR4geAonUCgnMgfbY3vfFVaH");
+declare_id!("5YogrduE2HdMcbY3irEB97esXDzjYCXHpMBvHqQAXA4w");
 
 #[program]
 pub mod marketplace_anchor {
     use super::*;
 
-    // Инициализация маркетплейса
     pub fn initialize_marketplace(
         ctx: Context<InitializeMarketplace>,
         fee_basis_points: u16,
@@ -18,12 +18,9 @@ pub mod marketplace_anchor {
         marketplace.fee_basis_points = fee_basis_points;
         marketplace.total_volume = 0;
         marketplace.total_sales = 0;
-        
-        msg!("Marketplace initialized with fee: {} basis points", fee_basis_points);
         Ok(())
     }
 
-    // Регистрация игры
     pub fn register_game(
         ctx: Context<RegisterGame>,
         name: String,
@@ -37,44 +34,53 @@ pub mod marketplace_anchor {
         game.description = description;
         game.total_items = 0;
         game.verified = false;
-        
-        msg!("Game registered: {}", game.name);
         Ok(())
     }
 
-    // Создание листинга NFT
-    pub fn create_listing(
-        ctx: Context<CreateListing>,
-        price: u64,
-    ) -> Result<()> {
+    pub fn create_listing(ctx: Context<CreateListing>, price: u64) -> Result<()> {
         let listing = &mut ctx.accounts.listing;
         listing.seller = ctx.accounts.seller.key();
         listing.nft_mint = ctx.accounts.nft_mint.key();
         listing.price = price;
         listing.is_active = true;
         listing.created_at = Clock::get()?.unix_timestamp;
-        
-        msg!("NFT listed for sale: {} SOL", price);
         Ok(())
     }
 
-    // Покупка NFT
     pub fn buy_nft(ctx: Context<BuyNft>) -> Result<()> {
         let listing = &mut ctx.accounts.listing;
         let marketplace = &mut ctx.accounts.marketplace;
-        
         require!(listing.is_active, ErrorCode::ListingNotActive);
-        
+
         let price = listing.price;
-        let fee = (price * marketplace.fee_basis_points as u64) / 10000;
+        let fee = (price * marketplace.fee_basis_points as u64) / 10_000;
         let seller_amount = price - fee;
 
         // Перевод SOL продавцу
-        **ctx.accounts.buyer.to_account_info().try_borrow_mut_lamports()? -= price;
-        **ctx.accounts.seller.to_account_info().try_borrow_mut_lamports()? += seller_amount;
-        **ctx.accounts.marketplace_authority.to_account_info().try_borrow_mut_lamports()? += fee;
+        system_program::transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.buyer.to_account_info(),
+                    to: ctx.accounts.seller.to_account_info(),
+                },
+            ),
+            seller_amount,
+        )?;
 
-        // Перевод NFT покупателю
+        // Перевод комиссии маркетплейсу
+        system_program::transfer(
+            CpiContext::new(
+                ctx.accounts.system_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.buyer.to_account_info(),
+                    to: ctx.accounts.marketplace_authority.to_account_info(),
+                },
+            ),
+            fee,
+        )?;
+
+        // Перевод NFT
         token::transfer(
             CpiContext::new(
                 ctx.accounts.token_program.to_account_info(),
@@ -90,43 +96,39 @@ pub mod marketplace_anchor {
         listing.is_active = false;
         marketplace.total_volume += price;
         marketplace.total_sales += 1;
-
-        msg!("NFT sold for {} SOL", price);
         Ok(())
     }
 }
 
-// Аккаунт маркетплейса
+// ---------- Accounts ----------
+
 #[account]
 pub struct Marketplace {
-    pub authority: Pubkey,           // Владелец маркетплейса
-    pub fee_basis_points: u16,       // Комиссия в базисных пунктах (100 = 1%)
-    pub total_volume: u64,           // Общий объем торгов
-    pub total_sales: u64,            // Количество продаж
+    pub authority: Pubkey,
+    pub fee_basis_points: u16,
+    pub total_volume: u64,
+    pub total_sales: u64,
 }
 
-// Аккаунт игры
 #[account]
 pub struct Game {
-    pub authority: Pubkey,           // Разработчик игры
-    pub name: String,                // Название игры
-    pub symbol: String,              // Символ токенов
-    pub description: String,         // Описание
-    pub total_items: u64,           // Количество созданных предметов
-    pub verified: bool,              // Верификация игры
+    pub authority: Pubkey,
+    pub name: String,
+    pub symbol: String,
+    pub description: String,
+    pub total_items: u64,
+    pub verified: bool,
 }
 
-// Аккаунт листинга
 #[account]
 pub struct Listing {
-    pub seller: Pubkey,              // Продавец
-    pub nft_mint: Pubkey,           // Адрес NFT токена
-    pub price: u64,                  // Цена в лампортах
-    pub is_active: bool,             // Активен ли листинг
-    pub created_at: i64,            // Время создания
+    pub seller: Pubkey,
+    pub nft_mint: Pubkey,
+    pub price: u64,
+    pub is_active: bool,
+    pub created_at: i64,
 }
 
-// Контексты для инструкций
 #[derive(Accounts)]
 pub struct InitializeMarketplace<'info> {
     #[account(
@@ -148,7 +150,7 @@ pub struct RegisterGame<'info> {
     #[account(
         init,
         payer = authority,
-        space = 8 + 32 + 4 + name.len() + 4 + 10 + 4 + 200 + 8 + 1,
+        space = 8 + 32 + 4 + 64 + 4 + 10 + 4 + 256 + 8 + 1,
         seeds = [b"game", authority.key().as_ref()],
         bump
     )]
@@ -182,10 +184,9 @@ pub struct BuyNft<'info> {
     pub marketplace: Account<'info, Marketplace>,
     #[account(mut)]
     pub buyer: Signer<'info>,
-    /// CHECK: Safe as we only transfer lamports
     #[account(mut)]
-    pub seller: AccountInfo<'info>,
-    /// CHECK: Safe as we only transfer lamports
+    pub seller: Signer<'info>, // 👈 оставляем Signer
+    /// CHECK: safe
     #[account(mut)]
     pub marketplace_authority: AccountInfo<'info>,
     #[account(mut)]
@@ -203,7 +204,6 @@ pub struct BuyNft<'info> {
     pub system_program: Program<'info, System>,
 }
 
-// Коды ошибок
 #[error_code]
 pub enum ErrorCode {
     #[msg("Listing is not active")]
