@@ -14,15 +14,20 @@ const Header = () => {
   const [tempUsername, setTempUsername] = useState("");
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const location = useLocation();
-  const { connected, address } = useSolanaWallet();
+  const { connected, address, connecting } = useSolanaWallet();
   const { username, isLoggedIn, joinDate, setUsername, logout } = useUserData();
 
   // Отслеживание подключения кошелька для показа модала имени пользователя
   useEffect(() => {
-    if (connected && !isLoggedIn) {
+    console.log('Header: состояние изменилось', { connected, isLoggedIn, connecting, address });
+    
+    // Показываем модал только если кошелек подключен, но пользователь не авторизован
+    // и процесс подключения завершен
+    if (connected && !connecting && !isLoggedIn && address) {
+      console.log('Header: показываем модал имени пользователя');
       setShowUsernameModal(true);
     }
-  }, [connected, isLoggedIn]);
+  }, [connected, isLoggedIn, connecting, address]);
 
   const handleUsernameSubmit = () => {
     if (tempUsername.trim()) {
@@ -88,7 +93,7 @@ const Header = () => {
             <div className="flex items-center space-x-2">
               <NetworkStatus />
             </div>
-            {connected && isLoggedIn ? (
+            {connected && isLoggedIn && !connecting ? (
               <UserProfile 
                 username={username}
                 walletAddress={address || ""}

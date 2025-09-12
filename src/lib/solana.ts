@@ -124,28 +124,30 @@ export class SolanaWallet {
   // Проверка подключения при загрузке страницы
   async checkConnection(): Promise<void> {
     try {
+      console.log('SolanaWallet: проверяем подключение');
+      
       if (!this.isPhantomInstalled() || !window.solana) {
-        console.log('Phantom кошелек не найден');
+        console.log('SolanaWallet: Phantom кошелек не найден');
         this._publicKey = null;
         this._connected = false;
         return;
       }
 
       // Небольшая задержка для инициализации Phantom
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       // Проверяем состояние подключения в Phantom
       if (window.solana.isConnected && window.solana.publicKey) {
-        console.log('Phantom кошелек подключен:', window.solana.publicKey.toString());
+        console.log('SolanaWallet: Phantom кошелек подключен:', window.solana.publicKey.toString());
         this._publicKey = window.solana.publicKey;
         this._connected = true;
       } else {
-        console.log('Phantom кошелек не подключен');
+        console.log('SolanaWallet: Phantom кошелек не подключен');
         this._publicKey = null;
         this._connected = false;
       }
     } catch (error) {
-      console.error('Ошибка проверки подключения:', error);
+      console.error('SolanaWallet: ошибка проверки подключения:', error);
       this._publicKey = null;
       this._connected = false;
     }

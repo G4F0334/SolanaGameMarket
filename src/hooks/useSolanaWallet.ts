@@ -48,26 +48,34 @@ export const useSolanaWallet = () => {
 
   // Подключение кошелька
   const connect = async () => {
+    console.log('useSolanaWallet: начинаем подключение');
     setWalletState(prev => ({ ...prev, connecting: true }));
     
     try {
       const result = await solanaWallet.connect();
+      console.log('useSolanaWallet: результат подключения', result);
       
       if (result.success && result.publicKey) {
         const balance = await solanaWallet.getBalance();
         const address = result.publicKey.toString();
         
+        console.log('useSolanaWallet: кошелек подключен успешно', { address, balance });
+        
         // Сохраняем состояние
         saveWalletState(address, true);
         
-        setWalletState({
+        const newState = {
           publicKey: result.publicKey,
           connected: true,
           connecting: false,
           balance,
           address
-        });
+        };
+        
+        console.log('useSolanaWallet: устанавливаем новое состояние', newState);
+        setWalletState(newState);
       } else {
+        console.log('useSolanaWallet: подключение не удалось', result.error);
         setWalletState(prev => ({ 
           ...prev, 
           connecting: false 
@@ -78,6 +86,7 @@ export const useSolanaWallet = () => {
         }
       }
     } catch (error) {
+      console.error('useSolanaWallet: ошибка подключения', error);
       setWalletState(prev => ({ 
         ...prev, 
         connecting: false 
@@ -127,6 +136,7 @@ export const useSolanaWallet = () => {
   useEffect(() => {
     const initializeWallet = async () => {
       try {
+        console.log('useSolanaWallet: инициализация кошелька');
         setWalletState(prev => ({ ...prev, connecting: true }));
         
         // Проверяем подключение в Phantom
@@ -136,20 +146,23 @@ export const useSolanaWallet = () => {
           const balance = await solanaWallet.getBalance();
           const address = solanaWallet.publicKey.toString();
           
-          console.log('Кошелек подключен:', address);
+          console.log('useSolanaWallet: кошелек уже подключен при загрузке:', address);
           
-          setWalletState({
+          const newState = {
             publicKey: solanaWallet.publicKey,
             connected: true,
             connecting: false,
             balance,
             address
-          });
+          };
+          
+          console.log('useSolanaWallet: устанавливаем состояние при инициализации', newState);
+          setWalletState(newState);
           
           // Сохраняем состояние
           saveWalletState(address, true);
         } else {
-          console.log('Кошелек не подключен');
+          console.log('useSolanaWallet: кошелек не подключен при загрузке');
           
           setWalletState({
             publicKey: null,
@@ -163,7 +176,7 @@ export const useSolanaWallet = () => {
           storage.remove(STORAGE_KEYS.WALLET_STATE);
         }
       } catch (error) {
-        console.error('Ошибка инициализации кошелька:', error);
+        console.error('useSolanaWallet: ошибка инициализации кошелька:', error);
         setWalletState({
           publicKey: null,
           connected: false,
