@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Grid, List } from "lucide-react";
 import NFTCard, { NFT } from "@/components/nft/NFTCard";
+import { useGamesStore } from "@/contexts/GamesContext";
 
 const Catalog = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,80 +20,113 @@ const Catalog = () => {
   const [selectedRarity, setSelectedRarity] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const { getActiveGames } = useGamesStore();
 
+  // TODO: Заменить на API запрос
   // Mock данные - в будущем будут загружаться с бэкенда
   const allNFTs: NFT[] = [
     {
       id: "1",
       title: "Dragon Sword of Flames",
-      image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop",
       price: 2.5,
       currency: "SOL",
       game: "Fantasy Quest",
       rarity: "Legendary",
-      seller: "DragonMaster"
+      seller: "DragonMaster",
     },
     {
       id: "2",
       title: "Cyberpunk Armor Set",
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=400&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=400&fit=crop",
       price: 1.8,
       currency: "SOL",
       game: "Cyber City",
       rarity: "Epic",
-      seller: "CyberWarrior"
+      seller: "CyberWarrior",
     },
     {
       id: "3",
       title: "Mystic Staff",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop",
       price: 0.9,
       currency: "SOL",
       game: "Magic Realm",
       rarity: "Rare",
-      seller: "MagicUser"
+      seller: "MagicUser",
     },
     {
       id: "4",
       title: "Lightning Bow",
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=400&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=400&fit=crop",
       price: 1.2,
       currency: "SOL",
-      game: "Fantasy Quest", 
+      game: "Fantasy Quest",
       rarity: "Rare",
-      seller: "ElvenArcher"
+      seller: "ElvenArcher",
     },
     {
       id: "5",
       title: "Plasma Rifle",
-      image: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&h=400&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&h=400&fit=crop",
       price: 3.1,
       currency: "SOL",
       game: "Space Warriors",
       rarity: "Legendary",
-      seller: "SpaceCommander"
+      seller: "SpaceCommander",
     },
     {
       id: "6",
       title: "Crystal Shield",
-      image: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&h=400&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&h=400&fit=crop",
       price: 0.7,
       currency: "SOL",
       game: "Magic Realm",
       rarity: "Common",
-      seller: "CrystalMage"
-    }
+      seller: "CrystalMage",
+    },
   ];
 
-  const games = ["all", "Fantasy Quest", "Cyber City", "Magic Realm", "Space Warriors"];
+  const activeGames = getActiveGames();
+  const games = ["all", ...activeGames.map((game) => game.name)];
   const rarities = ["all", "Common", "Rare", "Epic", "Legendary"];
 
-  const filteredNFTs = allNFTs.filter(nft => {
-    const matchesSearch = nft.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         nft.game.toLowerCase().includes(searchQuery.toLowerCase());
+  // TODO: Добавить useEffect для загрузки NFT с API
+  // useEffect(() => {
+  //   const loadNFTs = async () => {
+  //     try {
+  //       const response = await apiService.getNFTs({
+  //         page: 1,
+  //         limit: 100,
+  //         game: selectedGame !== "all" ? selectedGame : undefined,
+  //         rarity: selectedRarity !== "all" ? selectedRarity : undefined,
+  //         search: searchQuery || undefined,
+  //         sortBy: sortBy as any,
+  //       });
+  //       if (response.success) {
+  //         setAllNFTs(response.data.items);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error loading NFTs:', error);
+  //     }
+  //   };
+  //   loadNFTs();
+  // }, [selectedGame, selectedRarity, searchQuery, sortBy]);
+
+  const filteredNFTs = allNFTs.filter((nft) => {
+    const matchesSearch =
+      nft.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      nft.game.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGame = selectedGame === "all" || nft.game === selectedGame;
-    const matchesRarity = selectedRarity === "all" || nft.rarity === selectedRarity;
-    
+    const matchesRarity =
+      selectedRarity === "all" || nft.rarity === selectedRarity;
+
     return matchesSearch && matchesGame && matchesRarity;
   });
 
@@ -97,7 +137,8 @@ const Catalog = () => {
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">Каталог NFT</h1>
           <p className="text-muted-foreground">
-            Исследуйте коллекцию уникальных игровых предметов от лучших разработчиков
+            Исследуйте коллекцию уникальных игровых предметов от лучших
+            разработчиков
           </p>
         </div>
 
@@ -116,13 +157,13 @@ const Catalog = () => {
                   />
                 </div>
               </div>
-              
+
               <Select value={selectedGame} onValueChange={setSelectedGame}>
                 <SelectTrigger>
                   <SelectValue placeholder="Игра" />
                 </SelectTrigger>
                 <SelectContent>
-                  {games.map(game => (
+                  {games.map((game) => (
                     <SelectItem key={game} value={game}>
                       {game === "all" ? "Все игры" : game}
                     </SelectItem>
@@ -135,7 +176,7 @@ const Catalog = () => {
                   <SelectValue placeholder="Редкость" />
                 </SelectTrigger>
                 <SelectContent>
-                  {rarities.map(rarity => (
+                  {rarities.map((rarity) => (
                     <SelectItem key={rarity} value={rarity}>
                       {rarity === "all" ? "Все редкости" : rarity}
                     </SelectItem>
@@ -156,14 +197,14 @@ const Catalog = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
               <div className="flex items-center space-x-4">
                 <Badge variant="secondary">
                   {filteredNFTs.length} предметов найдено
                 </Badge>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Button
                   variant={viewMode === "grid" ? "default" : "outline"}
@@ -186,13 +227,18 @@ const Catalog = () => {
 
         {/* NFT Grid */}
         {filteredNFTs.length > 0 ? (
-          <div className={`grid gap-6 ${
-            viewMode === "grid" 
-              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-              : "grid-cols-1"
-          }`}>
+          <div
+            className={`grid gap-6 ${
+              viewMode === "grid"
+                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "grid-cols-1"
+            }`}
+          >
             {filteredNFTs.map((nft) => (
-              <div key={nft.id} className={viewMode === "list" ? "max-w-2xl" : ""}>
+              <div
+                key={nft.id}
+                className={viewMode === "list" ? "max-w-2xl" : ""}
+              >
                 <NFTCard key={nft.id} nft={nft} />
               </div>
             ))}
@@ -205,8 +251,8 @@ const Catalog = () => {
               <p className="text-muted-foreground mb-4">
                 Попробуйте изменить фильтры или поисковый запрос
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSearchQuery("");
                   setSelectedGame("all");

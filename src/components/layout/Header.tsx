@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WalletConnect } from "@/components/wallet/WalletConnect";
@@ -19,10 +24,15 @@ const Header = () => {
 
   // Отслеживание подключения кошелька для показа модала имени пользователя
   useEffect(() => {
-    console.log('Header: состояние изменилось', { connected, isLoggedIn, connecting, address });
-    
+    console.log("Header: состояние изменилось", {
+      connected,
+      isLoggedIn,
+      connecting,
+      address,
+    });
+
     if (connected && !connecting && !isLoggedIn && address) {
-      console.log('Header: показываем модал имени пользователя');
+      console.log("Header: показываем модал имени пользователя");
       setShowUsernameModal(true);
     }
   }, [connected, isLoggedIn, connecting, address]);
@@ -52,13 +62,13 @@ const Header = () => {
               </div>
               <span className="text-xl font-bold gradient-text">GameNFT</span>
             </Link>
-            
+
             <nav className="hidden md:flex items-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
               <Link
                 to="/"
                 className={`text-sm font-medium transition-all duration-300 hover:text-white ${
-                  isActivePath("/") 
-                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg" 
+                  isActivePath("/")
+                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg"
                     : "text-muted-foreground"
                 }`}
               >
@@ -67,8 +77,8 @@ const Header = () => {
               <Link
                 to="/catalog"
                 className={`text-sm font-medium transition-all duration-300 hover:text-white ${
-                  isActivePath("/catalog") 
-                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg" 
+                  isActivePath("/catalog")
+                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg"
                     : "text-muted-foreground"
                 }`}
               >
@@ -77,12 +87,22 @@ const Header = () => {
               <Link
                 to="/profile"
                 className={`text-sm font-medium transition-all duration-300 hover:text-white ${
-                  isActivePath("/profile") 
-                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg" 
+                  isActivePath("/profile")
+                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg"
                     : "text-muted-foreground"
                 }`}
               >
                 Профиль
+              </Link>
+              <Link
+                to="/admin"
+                className={`text-sm font-medium transition-all duration-300 hover:text-white ${
+                  isActivePath("/admin")
+                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg"
+                    : "text-muted-foreground"
+                }`}
+              >
+                Админ
               </Link>
             </nav>
           </div>
@@ -92,7 +112,7 @@ const Header = () => {
               <NetworkStatus />
             </div>
             {connected && isLoggedIn && !connecting ? (
-              <UserProfile 
+              <UserProfile
                 username={username}
                 walletAddress={address || ""}
                 onDisconnect={handleDisconnect}
@@ -118,11 +138,11 @@ const Header = () => {
                 placeholder="Введите никнейм"
                 value={tempUsername}
                 onChange={(e) => setTempUsername(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleUsernameSubmit()}
+                onKeyPress={(e) => e.key === "Enter" && handleUsernameSubmit()}
               />
             </div>
-            <Button 
-              onClick={handleUsernameSubmit} 
+            <Button
+              onClick={handleUsernameSubmit}
               className="w-full gradient-solana text-white"
               disabled={!tempUsername.trim()}
             >

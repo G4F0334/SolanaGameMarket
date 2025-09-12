@@ -17,14 +17,21 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("owned");
   const { connected, address, balance, formatAddress } = useSolanaWallet();
   const { username, isLoggedIn, joinDate } = useUserData();
-  const { ownedNFTs, listedNFTs, soldNFTs, purchaseHistory, listNFT, unlistNFT } = useNFTStore();
+  const {
+    ownedNFTs,
+    listedNFTs,
+    soldNFTs,
+    purchaseHistory,
+    listNFT,
+    unlistNFT,
+  } = useNFTStore();
 
   // Данные пользователя
   const user = {
     username: username || "Пользователь",
     joinDate: joinDate || "Неизвестно",
     totalNFTs: ownedNFTs.length,
-    totalSales: soldNFTs.length
+    totalSales: soldNFTs.length,
   };
 
   const copyWalletAddress = () => {
@@ -36,7 +43,10 @@ const Profile = () => {
 
   const openInExplorer = () => {
     if (address) {
-      window.open(`https://explorer.solana.com/address/${address}?cluster=devnet`, '_blank');
+      window.open(
+        `https://explorer.solana.com/address/${address}?cluster=devnet`,
+        "_blank"
+      );
     }
   };
 
@@ -50,13 +60,14 @@ const Profile = () => {
               <CardContent className="p-8 text-center">
                 <Wallet className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
                 <h2 className="text-2xl font-bold mb-4">
-                  {!connected ? 'Кошелек не подключен' : 'Требуется авторизация'}
+                  {!connected
+                    ? "Кошелек не подключен"
+                    : "Требуется авторизация"}
                 </h2>
                 <p className="text-muted-foreground mb-6">
-                  {!connected 
-                    ? 'Подключите Solana кошелек, чтобы просматривать свой профиль и управлять NFT'
-                    : 'Введите имя пользователя для завершения настройки профиля'
-                  }
+                  {!connected
+                    ? "Подключите Solana кошелек, чтобы просматривать свой профиль и управлять NFT"
+                    : "Введите имя пользователя для завершения настройки профиля"}
                 </p>
                 <WalletConnect variant="card" />
               </CardContent>
@@ -73,9 +84,9 @@ const Profile = () => {
   };
 
   const handleUnlistNFT = (nftId: string) => {
-    const nft = listedNFTs.find(n => n.id === nftId);
+    const nft = listedNFTs.find((n) => n.id === nftId);
     unlistNFT(nftId);
-    toast.success(`${nft?.title || 'NFT'} снят с продажи`);
+    toast.success(`${nft?.title || "NFT"} снят с продажи`);
   };
 
   return (
@@ -91,15 +102,17 @@ const Profile = () => {
                     {user.username[0]}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold">{user.username}</h1>
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                     <Wallet className="h-4 w-4" />
-                    <span className="font-mono">
-                      {formatAddress(address)}
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={copyWalletAddress}>
+                    <span className="font-mono">{formatAddress(address)}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={copyWalletAddress}
+                    >
                       <Copy className="h-3 w-3" />
                     </Button>
                     <Button variant="ghost" size="sm" onClick={openInExplorer}>
@@ -111,7 +124,7 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-              
+
               <Button variant="outline">
                 <Settings className="mr-2 h-4 w-4" />
                 Настройки
@@ -149,7 +162,7 @@ const Profile = () => {
                 {user.totalNFTs}
               </div>
               <p className="text-xs text-muted-foreground">
-                В {new Set(ownedNFTs.map(nft => nft.game)).size} играх
+                В {new Set(ownedNFTs.map((nft) => nft.game)).size} играх
               </p>
             </CardContent>
           </Card>
@@ -177,9 +190,15 @@ const Profile = () => {
         {/* Tabs */}
         <Tabs defaultValue="owned" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="owned">Коллекция ({ownedNFTs.length})</TabsTrigger>
-            <TabsTrigger value="listed">На продаже ({listedNFTs.length})</TabsTrigger>
-            <TabsTrigger value="sold">Проданные ({soldNFTs.length})</TabsTrigger>
+            <TabsTrigger value="owned">
+              Коллекция ({ownedNFTs.length})
+            </TabsTrigger>
+            <TabsTrigger value="listed">
+              На продаже ({listedNFTs.length})
+            </TabsTrigger>
+            <TabsTrigger value="sold">
+              Проданные ({soldNFTs.length})
+            </TabsTrigger>
             <TabsTrigger value="activity">Активность</TabsTrigger>
           </TabsList>
 
@@ -205,9 +224,12 @@ const Profile = () => {
             ) : (
               <Card className="gradient-card border-border/50">
                 <CardContent className="p-12 text-center">
-                  <h3 className="text-xl font-semibold mb-2">Коллекция пуста</h3>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Коллекция пуста
+                  </h3>
                   <p className="text-muted-foreground mb-4">
-                    У вас пока нет NFT. Исследуйте каталог и найдите свой первый предмет!
+                    У вас пока нет NFT. Исследуйте каталог и найдите свой первый
+                    предмет!
                   </p>
                   <Button variant="outline">Перейти в каталог</Button>
                 </CardContent>
@@ -239,7 +261,9 @@ const Profile = () => {
             ) : (
               <Card className="gradient-card border-border/50">
                 <CardContent className="p-12 text-center">
-                  <h3 className="text-xl font-semibold mb-2">Нет NFT на продаже</h3>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Нет NFT на продаже
+                  </h3>
                   <p className="text-muted-foreground">
                     Вы не выставили ни одного NFT на продажу
                   </p>
@@ -278,14 +302,26 @@ const Profile = () => {
                 <div className="space-y-4">
                   {purchaseHistory.length > 0 ? (
                     purchaseHistory.slice(0, 10).map((nft, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-secondary">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-4 rounded-lg bg-secondary"
+                      >
                         <div>
-                          <div className="font-medium">Покупка: {nft.title}</div>
-                          <div className="text-sm text-muted-foreground">{new Date().toLocaleDateString()}</div>
+                          <div className="font-medium">
+                            Покупка: {nft.title}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {new Date().toLocaleDateString()}
+                          </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold text-primary">{nft.price} {nft.currency}</div>
-                          <Badge variant="secondary" className="bg-green-500/20 text-green-400">
+                          <div className="font-bold text-primary">
+                            {nft.price} {nft.currency}
+                          </div>
+                          <Badge
+                            variant="secondary"
+                            className="bg-green-500/20 text-green-400"
+                          >
                             Покупка
                           </Badge>
                         </div>
@@ -293,7 +329,9 @@ const Profile = () => {
                     ))
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-muted-foreground">История активности пуста</p>
+                      <p className="text-muted-foreground">
+                        История активности пуста
+                      </p>
                     </div>
                   )}
                 </div>

@@ -19,18 +19,18 @@ const NFTDetail = () => {
     id: id || "1",
     title: "Dragon Sword of Flames",
     image: dragonSwordImg,
-    price: 2.5,
+    price: 1,
     currency: "SOL",
     game: "Fantasy Quest",
     rarity: "Legendary",
-    seller: "DragonMaster"
+    seller: "DragonMaster",
   };
 
   const rarityColors = {
     Common: "bg-slate-500",
     Rare: "bg-blue-500",
-    Epic: "bg-purple-500", 
-    Legendary: "bg-amber-500"
+    Epic: "bg-purple-500",
+    Legendary: "bg-amber-500",
   };
 
   const handleBuy = () => {
@@ -42,23 +42,25 @@ const NFTDetail = () => {
     {
       id: "2",
       title: "Lightning Bow",
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop",
       price: 1.2,
       currency: "SOL",
       game: "Fantasy Quest",
       rarity: "Rare",
-      seller: "ElvenArcher"
+      seller: "ElvenArcher",
     },
     {
       id: "4",
       title: "Fire Staff",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=300&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=300&fit=crop",
       price: 1.8,
       currency: "SOL",
       game: "Fantasy Quest",
       rarity: "Epic",
-      seller: "FireMage"
-    }
+      seller: "FireMage",
+    },
   ];
 
   return (
@@ -66,9 +68,13 @@ const NFTDetail = () => {
       <div className="container max-w-screen-2xl py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
-          <Link to="/" className="hover:text-primary">Главная</Link>
+          <Link to="/" className="hover:text-primary">
+            Главная
+          </Link>
           <span>/</span>
-          <Link to="/catalog" className="hover:text-primary">Каталог</Link>
+          <Link to="/catalog" className="hover:text-primary">
+            Каталог
+          </Link>
           <span>/</span>
           <span className="text-foreground">{nft.title}</span>
         </nav>
@@ -83,12 +89,16 @@ const NFTDetail = () => {
                 className="w-full aspect-square object-cover"
               />
               <div className="absolute top-4 left-4">
-                <Badge className={`${rarityColors[nft.rarity]} text-white border-none`}>
+                <Badge
+                  className={`${
+                    rarityColors[nft.rarity]
+                  } text-white border-none`}
+                >
                   {nft.rarity}
                 </Badge>
               </div>
             </div>
-            
+
             {/* Action Buttons */}
             <div className="flex items-center justify-end space-x-2">
               <Button variant="outline" size="sm">
@@ -107,19 +117,25 @@ const NFTDetail = () => {
                 {nft.game}
               </Badge>
               <h1 className="text-3xl font-bold mb-4">{nft.title}</h1>
-              
+
               {/* Price */}
               <Card className="gradient-card border-border/50 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-sm text-muted-foreground">Текущая цена</div>
+                    <div className="text-sm text-muted-foreground">
+                      Текущая цена
+                    </div>
                     <div className="text-3xl font-bold text-primary">
                       {nft.price} {nft.currency}
                     </div>
-                    <div className="text-sm text-muted-foreground">≈ $156.25 USD</div>
+                    <div className="text-sm text-muted-foreground">
+                      ≈ $156.25 USD
+                    </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-muted-foreground">Заканчивается через</div>
+                    <div className="text-sm text-muted-foreground">
+                      Заканчивается через
+                    </div>
                     <div className="flex items-center text-sm font-semibold">
                       <Clock className="h-4 w-4 mr-1" />
                       2д 14ч 23м
@@ -132,7 +148,7 @@ const NFTDetail = () => {
             {/* Action Buttons */}
             <div className="space-y-3">
               {isConnected ? (
-                <Button 
+                <Button
                   onClick={handleBuy}
                   className="w-full gradient-solana text-white glow-solana"
                   size="lg"
@@ -158,7 +174,9 @@ const NFTDetail = () => {
                 </Avatar>
                 <div className="flex-1">
                   <div className="font-medium">{nft.seller}</div>
-                  <div className="text-sm text-muted-foreground">Подтвержденный продавец</div>
+                  <div className="text-sm text-muted-foreground">
+                    Подтвержденный продавец
+                  </div>
                 </div>
                 <Button variant="outline" size="sm">
                   Профиль
@@ -198,7 +216,10 @@ const NFTDetail = () => {
           <h2 className="text-2xl font-bold mb-6">Похожие NFT</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {similarNFTs.map((similarNft) => (
-              <Card key={similarNft.id} className="group overflow-hidden transition-all duration-300 hover:shadow-card gradient-card border-border/50">
+              <Card
+                key={similarNft.id}
+                className="group overflow-hidden transition-all duration-300 hover:shadow-card gradient-card border-border/50"
+              >
                 <Link to={`/nft/${similarNft.id}`}>
                   <div className="relative overflow-hidden">
                     <img

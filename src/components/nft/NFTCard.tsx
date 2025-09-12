@@ -16,6 +16,9 @@ export interface NFT {
   game: string;
   rarity: "Common" | "Rare" | "Epic" | "Legendary";
   seller: string;
+  description?: string;
+  category?: string;
+  attributes?: Array<{ trait: string; value: string }>;
 }
 
 interface NFTCardProps {
@@ -26,9 +29,9 @@ interface NFTCardProps {
 
 const rarityColors = {
   Common: "bg-slate-500",
-  Rare: "bg-blue-500", 
+  Rare: "bg-blue-500",
   Epic: "bg-purple-500",
-  Legendary: "bg-amber-500"
+  Legendary: "bg-amber-500",
 };
 
 const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
@@ -37,21 +40,23 @@ const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
 
   const handlePurchase = (e: React.MouseEvent) => {
     e.preventDefault(); // Предотвращаем переход по ссылке
-    
+
     if (!connected) {
-      toast.error('Подключите кошелек для покупки NFT');
+      toast.error("Подключите кошелек для покупки NFT");
       return;
     }
 
     if (balance < nft.price) {
-      toast.error('Недостаточно средств на балансе');
+      toast.error("Недостаточно средств на балансе");
       return;
     }
 
     // Имитация покупки
     addToPurchaseHistory(nft);
-    toast.success(`Вы успешно купили ${nft.title} за ${nft.price} ${nft.currency}!`);
-    
+    toast.success(
+      `Вы успешно купили ${nft.title} за ${nft.price} ${nft.currency}!`
+    );
+
     if (onPurchase) {
       onPurchase(nft);
     }
@@ -67,14 +72,15 @@ const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
             className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Overlays */}
           <div className="absolute top-2 left-2">
-            <Badge className={`${rarityColors[nft.rarity]} text-white border-none`}>
+            <Badge
+              className={`${rarityColors[nft.rarity]} text-white border-none`}
+            >
               {nft.rarity}
             </Badge>
           </div>
-          
         </div>
 
         <CardContent className="p-4">
@@ -84,11 +90,11 @@ const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
                 {nft.game}
               </Badge>
             </div>
-            
+
             <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
               {nft.title}
             </h3>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-lg font-bold text-primary">
@@ -98,17 +104,20 @@ const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
                   by {nft.seller}
                 </div>
               </div>
-              
+
               {showBuyButton && (
-                <Button 
-                  size="sm" 
-                  variant="default" 
+                <Button
+                  size="sm"
+                  variant="default"
                   className="gradient-solana text-white"
                   onClick={handlePurchase}
                   disabled={!connected || balance < nft.price}
                 >
-                  {!connected ? 'Подключите кошелек' : 
-                   balance < nft.price ? 'Недостаточно SOL' : 'Купить'}
+                  {!connected
+                    ? "Подключите кошелек"
+                    : balance < nft.price
+                    ? "Недостаточно SOL"
+                    : "Купить"}
                 </Button>
               )}
             </div>

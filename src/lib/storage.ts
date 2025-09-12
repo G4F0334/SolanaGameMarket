@@ -5,7 +5,7 @@ export const storage = {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error('Error saving to localStorage:', error);
+      console.error("Error saving to localStorage:", error);
     }
   },
 
@@ -15,7 +15,7 @@ export const storage = {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : null;
     } catch (error) {
-      console.error('Error reading from localStorage:', error);
+      console.error("Error reading from localStorage:", error);
       return null;
     }
   },
@@ -25,7 +25,7 @@ export const storage = {
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.error('Error removing from localStorage:', error);
+      console.error("Error removing from localStorage:", error);
     }
   },
 
@@ -34,16 +34,17 @@ export const storage = {
     try {
       localStorage.clear();
     } catch (error) {
-      console.error('Error clearing localStorage:', error);
+      console.error("Error clearing localStorage:", error);
     }
-  }
+  },
 };
 
 // Ключи для хранения
 export const STORAGE_KEYS = {
-  WALLET_STATE: 'solana_wallet_state',
-  USER_DATA: 'user_data',
-  NFT_STORE: 'nft_store'
+  WALLET_STATE: "solana_wallet_state",
+  USER_DATA: "user_data",
+  NFT_STORE: "nft_store",
+  GAMES: "games_store",
 };
 
 // Типы для сохраняемых данных
