@@ -2,6 +2,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { useNFTStore } from "@/contexts/NFTContext";
+import { useSolanaWallet } from "@/hooks/useSolanaWallet";
+import { toast } from "sonner";
 import React from "react";
 
 export interface NFT {
@@ -18,6 +21,7 @@ export interface NFT {
 interface NFTCardProps {
   nft: NFT;
   showBuyButton?: boolean;
+  onPurchase?: (nft: NFT) => void;
 }
 
 const rarityColors = {
@@ -27,7 +31,31 @@ const rarityColors = {
   Legendary: "bg-amber-500"
 };
 
-const NFTCard = ({ nft, showBuyButton = true }: NFTCardProps) => {
+const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
+  const { addToPurchaseHistory } = useNFTStore();
+  const { connected, balance } = useSolanaWallet();
+
+  const handlePurchase = (e: React.MouseEvent) => {
+    e.preventDefault(); // Предотвращаем переход по ссылке
+    
+    if (!connected) {
+      toast.error('Подключите кошелек для покупки NFT');
+      return;
+    }
+
+    if (balance < nft.price) {
+      toast.error('Недостаточно средств на балансе');
+      return;
+    }
+
+    // Имитация покупки
+    addToPurchaseHistory(nft);
+    toast.success(`Вы успешно купили ${nft.title} за ${nft.price} ${nft.currency}!`);
+    
+    if (onPurchase) {
+      onPurchase(nft);
+    }
+  };
 
   return (
     <Link to={`/nft/${nft.id}`}>
@@ -72,8 +100,15 @@ const NFTCard = ({ nft, showBuyButton = true }: NFTCardProps) => {
               </div>
               
               {showBuyButton && (
-                <Button size="sm" variant="default" className="gradient-solana text-white">
-                  Купить
+                <Button 
+                  size="sm" 
+                  variant="default" 
+                  className="gradient-solana text-white"
+                  onClick={handlePurchase}
+                  disabled={!connected || balance < nft.price}
+                >
+                  {!connected ? 'Подключите кошелек' : 
+                   balance < nft.price ? 'Недостаточно SOL' : 'Купить'}
                 </Button>
               )}
             </div>

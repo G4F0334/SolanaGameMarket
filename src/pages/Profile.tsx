@@ -4,76 +4,78 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Wallet, Copy, ExternalLink, Settings } from "lucide-react";
+import { Wallet, Copy, ExternalLink, Settings, Plus } from "lucide-react";
+import { WalletConnect } from "@/components/wallet/WalletConnect";
+import { useSolanaWallet } from "@/hooks/useSolanaWallet";
+import { useUserData } from "@/hooks/useUserData";
+import { useNFTStore } from "@/contexts/NFTContext";
 import NFTCard, { NFT } from "@/components/nft/NFTCard";
+import { toast } from "sonner";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("owned");
+  const { connected, address, balance, formatAddress } = useSolanaWallet();
+  const { username, isLoggedIn, joinDate } = useUserData();
+  const { ownedNFTs, listedNFTs, soldNFTs, purchaseHistory, listNFT, unlistNFT } = useNFTStore();
 
-  // Mock данные пользователя
+  // Данные пользователя
   const user = {
-    username: "DragonMaster",
-    walletAddress: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
-    joinDate: "Март 2024",
-    totalValue: 12.8,
-    totalNFTs: 15,
-    totalSales: 8
+    username: username || "Пользователь",
+    joinDate: joinDate || "Неизвестно",
+    totalNFTs: ownedNFTs.length,
+    totalSales: soldNFTs.length
   };
 
   const copyWalletAddress = () => {
-    navigator.clipboard.writeText(user.walletAddress);
+    if (address) {
+      navigator.clipboard.writeText(address);
+      toast.success("Адрес кошелька скопирован");
+    }
   };
 
-  // Mock NFTs пользователя
-  const ownedNFTs: NFT[] = [
-    {
-      id: "1",
-      title: "Dragon Sword of Flames",
-      image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop",
-      price: 2.5,
-      currency: "SOL",
-      game: "Fantasy Quest",
-      rarity: "Legendary",
-      seller: "DragonMaster"
-    },
-    {
-      id: "2",
-      title: "Lightning Bow",
-      image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=400&fit=crop",
-      price: 1.2,
-      currency: "SOL",
-      game: "Fantasy Quest",
-      rarity: "Rare",
-      seller: "DragonMaster"
-    },
-    {
-      id: "3",
-      title: "Fire Staff",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop",
-      price: 1.8,
-      currency: "SOL",
-      game: "Magic Realm",
-      rarity: "Epic",
-      seller: "DragonMaster"
+  const openInExplorer = () => {
+    if (address) {
+      window.open(`https://explorer.solana.com/address/${address}?cluster=devnet`, '_blank');
     }
-  ];
+  };
 
-  const listedNFTs: NFT[] = [
-    ownedNFTs[0] // Dragon Sword выставлен на продажу
-  ];
+  // Если кошелек не подключен или пользователь не вошел
+  if (!connected || !isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container max-w-screen-2xl py-8">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <Card className="max-w-md w-full">
+              <CardContent className="p-8 text-center">
+                <Wallet className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
+                <h2 className="text-2xl font-bold mb-4">
+                  {!connected ? 'Кошелек не подключен' : 'Требуется авторизация'}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {!connected 
+                    ? 'Подключите Solana кошелек, чтобы просматривать свой профиль и управлять NFT'
+                    : 'Введите имя пользователя для завершения настройки профиля'
+                  }
+                </p>
+                <WalletConnect variant="card" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const soldNFTs: NFT[] = [
-    {
-      id: "4",
-      title: "Crystal Armor",
-      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=400&fit=crop",
-      price: 3.2,
-      currency: "SOL",
-      game: "Cyber City",
-      rarity: "Epic",
-      seller: "DragonMaster"
-    }
-  ];
+  const handleListNFT = (nft: NFT) => {
+    listNFT(nft);
+    toast.success(`${nft.title} выставлен на продажу`);
+  };
+
+  const handleUnlistNFT = (nftId: string) => {
+    const nft = listedNFTs.find(n => n.id === nftId);
+    unlistNFT(nftId);
+    toast.success(`${nft?.title || 'NFT'} снят с продажи`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,12 +96,12 @@ const Profile = () => {
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                     <Wallet className="h-4 w-4" />
                     <span className="font-mono">
-                      {`${user.walletAddress.slice(0, 8)}...${user.walletAddress.slice(-8)}`}
+                      {formatAddress(address)}
                     </span>
                     <Button variant="ghost" size="sm" onClick={copyWalletAddress}>
                       <Copy className="h-3 w-3" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={openInExplorer}>
                       <ExternalLink className="h-3 w-3" />
                     </Button>
                   </div>
@@ -127,10 +129,10 @@ const Profile = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
-                {user.totalValue} SOL
+                {balance.toFixed(4)} SOL
               </div>
               <p className="text-xs text-muted-foreground">
-                ≈ ${(user.totalValue * 62.5).toFixed(2)} USD
+                ≈ ${(balance * 62.5).toFixed(2)} USD
               </p>
             </CardContent>
           </Card>
@@ -181,7 +183,19 @@ const Profile = () => {
             {ownedNFTs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {ownedNFTs.map((nft) => (
-                  <NFTCard key={nft.id} nft={nft} showBuyButton={false} />
+                  <div key={nft.id} className="relative group">
+                    <NFTCard nft={nft} showBuyButton={false} />
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="sm"
+                        onClick={() => handleListNFT(nft)}
+                        className="bg-primary/90 hover:bg-primary"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Продать
+                      </Button>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -201,11 +215,20 @@ const Profile = () => {
             {listedNFTs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {listedNFTs.map((nft) => (
-                  <div key={nft.id} className="relative">
+                  <div key={nft.id} className="relative group">
                     <NFTCard nft={nft} showBuyButton={false} />
-                    <Badge className="absolute top-2 right-2 bg-primary">
+                    <Badge className="absolute top-2 left-2 bg-primary">
                       На продаже
                     </Badge>
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleUnlistNFT(nft.id)}
+                      >
+                        Снять
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -249,31 +272,26 @@ const Profile = () => {
             <Card className="gradient-card border-border/50">
               <CardContent className="p-8">
                 <div className="space-y-4">
-                  {[
-                    { action: "Покупка", item: "Dragon Sword of Flames", price: "2.5 SOL", date: "2 часа назад", type: "buy" },
-                    { action: "Продажа", item: "Crystal Armor", price: "3.2 SOL", date: "1 день назад", type: "sell" },
-                    { action: "Выставлено", item: "Dragon Sword of Flames", price: "2.5 SOL", date: "3 дня назад", type: "list" }
-                  ].map((activity, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-secondary">
-                      <div>
-                        <div className="font-medium">{activity.action}: {activity.item}</div>
-                        <div className="text-sm text-muted-foreground">{activity.date}</div>
+                  {purchaseHistory.length > 0 ? (
+                    purchaseHistory.slice(0, 10).map((nft, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-secondary">
+                        <div>
+                          <div className="font-medium">Покупка: {nft.title}</div>
+                          <div className="text-sm text-muted-foreground">{new Date().toLocaleDateString()}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-primary">{nft.price} {nft.currency}</div>
+                          <Badge variant="secondary" className="bg-green-500/20 text-green-400">
+                            Покупка
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <div className="font-bold text-primary">{activity.price}</div>
-                        <Badge 
-                          variant="secondary"
-                          className={
-                            activity.type === "buy" ? "bg-green-500/20 text-green-400" :
-                            activity.type === "sell" ? "bg-red-500/20 text-red-400" :
-                            "bg-blue-500/20 text-blue-400"
-                          }
-                        >
-                          {activity.action}
-                        </Badge>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">История активности пуста</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>

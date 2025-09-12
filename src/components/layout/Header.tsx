@@ -1,37 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Wallet } from "lucide-react";
+import { WalletConnect } from "@/components/wallet/WalletConnect";
+import { NetworkStatus } from "@/components/wallet/NetworkStatus";
+import { useSolanaWallet } from "@/hooks/useSolanaWallet";
+import { useUserData } from "@/hooks/useUserData";
 import UserProfile from "@/components/ui/user-profile";
 
 const Header = () => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [username, setUsername] = useState("");
+  const [tempUsername, setTempUsername] = useState("");
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const location = useLocation();
+  const { connected, address } = useSolanaWallet();
+  const { username, isLoggedIn, joinDate, setUsername, logout } = useUserData();
 
-  const connectWallet = async () => {
-    // Mock wallet connection - будет заменено реальной интеграцией с Solana
-    const mockAddress = "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU";
-    setWalletAddress(mockAddress);
-    setShowUsernameModal(true);
-  };
+  // Отслеживание подключения кошелька для показа модала имени пользователя
+  useEffect(() => {
+    if (connected && !isLoggedIn) {
+      setShowUsernameModal(true);
+    }
+  }, [connected, isLoggedIn]);
 
   const handleUsernameSubmit = () => {
-    if (username.trim()) {
-      setIsConnected(true);
+    if (tempUsername.trim()) {
+      setUsername(tempUsername.trim());
+      setTempUsername("");
       setShowUsernameModal(false);
     }
   };
 
-  const disconnect = () => {
-    setIsConnected(false);
-    setWalletAddress("");
-    setUsername("");
+  const handleDisconnect = () => {
+    logout();
   };
 
   const isActivePath = (path: string) => location.pathname === path;
@@ -51,7 +53,7 @@ const Header = () => {
             <nav className="hidden md:flex items-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
               <Link
                 to="/"
-                className={`text-sm font-medium transition-all duration-300 hover:text-primary ${
+                className={`text-sm font-medium transition-all duration-300 hover:text-white ${
                   isActivePath("/") 
                     ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg" 
                     : "text-muted-foreground"
@@ -61,7 +63,7 @@ const Header = () => {
               </Link>
               <Link
                 to="/catalog"
-                className={`text-sm font-medium transition-all duration-300 hover:text-primary ${
+                className={`text-sm font-medium transition-all duration-300 hover:text-white ${
                   isActivePath("/catalog") 
                     ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg" 
                     : "text-muted-foreground"
@@ -69,21 +71,31 @@ const Header = () => {
               >
                 Каталог
               </Link>
+              <Link
+                to="/profile"
+                className={`text-sm font-medium transition-all duration-300 hover:text-white ${
+                  isActivePath("/profile") 
+                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg" 
+                    : "text-muted-foreground"
+                }`}
+              >
+                Профиль
+              </Link>
             </nav>
           </div>
 
           <div className="flex items-center space-x-4">
-            {isConnected ? (
+            <div className="flex items-center space-x-2">
+              <NetworkStatus />
+            </div>
+            {connected && isLoggedIn ? (
               <UserProfile 
                 username={username}
-                walletAddress={walletAddress}
-                onDisconnect={disconnect}
+                walletAddress={address || ""}
+                onDisconnect={handleDisconnect}
               />
             ) : (
-              <Button onClick={connectWallet} variant="default" className="gradient-solana text-white">
-                <Wallet className="mr-2 h-4 w-4" />
-                Подключить кошелек
-              </Button>
+              <WalletConnect />
             )}
           </div>
         </div>
@@ -101,15 +113,15 @@ const Header = () => {
               <Input
                 id="username"
                 placeholder="Введите никнейм"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={tempUsername}
+                onChange={(e) => setTempUsername(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleUsernameSubmit()}
               />
             </div>
             <Button 
               onClick={handleUsernameSubmit} 
               className="w-full gradient-solana text-white"
-              disabled={!username.trim()}
+              disabled={!tempUsername.trim()}
             >
               Продолжить
             </Button>

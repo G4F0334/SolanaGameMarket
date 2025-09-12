@@ -11,12 +11,8 @@ import cyberCityImg from "@/assets/game-cyber-city.jpg";
 import magicRealmImg from "@/assets/game-magic-realm.jpg";
 import spaceWarriorsImg from "@/assets/game-space-warriors.jpg";
 import battleArenaImg from "@/assets/game-battle-arena.jpg";
-import oceanDepthsImg from "@/assets/game-ocean-depths.jpg";
-import neonRunnersImg from "@/assets/game-neon-runners.jpg";
-import skyKingdomsImg from "@/assets/game-sky-kingdoms.jpg";
 
 const Home = () => {
-  // Mock данные - в будущем будут загружаться с бэкенда
   const featuredNFTs: NFT[] = [
     {
       id: "1",
@@ -315,8 +311,8 @@ const Home = () => {
 
       {/* Games Section */}
       <section className="py-16 gradient-hero border-t border-border/40">
-        <div className="container max-w-screen-2xl text-center">
-          <div className="max-w-2xl mx-auto space-y-6">
+        <div className="container mx-auto text-center">
+          <div className="space-y-6">
             <h2 className="text-3xl font-bold">Поддерживаемые игры</h2>
             <p className="text-muted-foreground">
               Мы работаем с лучшими играми и разработчиками для создания уникальной экосистемы игровых NFT
@@ -328,7 +324,7 @@ const Home = () => {
                 { name: "Valorant", image: spaceWarriorsImg },
                 { name: "League of Legends", image: fantasyQuestImg }
               ].map((game) => (
-                <Card key={game.name} className="group overflow-hidden rounded-xl bg-card border border-border/50 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+                <Card key={game.name} className="group w-full rounded-lg bg-card border-2 border-transparent transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer" style={{borderImage: 'linear-gradient(90deg, #3B82F6, #14F195) 1'}}>
                   <div className="aspect-square overflow-hidden">
                     <img 
                       src={game.image} 
