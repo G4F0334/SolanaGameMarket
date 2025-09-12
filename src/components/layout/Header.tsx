@@ -21,8 +21,6 @@ const Header = () => {
   useEffect(() => {
     console.log('Header: состояние изменилось', { connected, isLoggedIn, connecting, address });
     
-    // Показываем модал только если кошелек подключен, но пользователь не авторизован
-    // и процесс подключения завершен
     if (connected && !connecting && !isLoggedIn && address) {
       console.log('Header: показываем модал имени пользователя');
       setShowUsernameModal(true);

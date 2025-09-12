@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Wallet, Copy, ExternalLink, Settings, Plus } from "lucide-react";
 import { WalletConnect } from "@/components/wallet/WalletConnect";
+import { FaucetCard } from "@/components/wallet/FaucetCard";
 import { useSolanaWallet } from "@/hooks/useSolanaWallet";
 import { useUserData } from "@/hooks/useUserData";
 import { useNFTStore } from "@/contexts/NFTContext";
@@ -120,7 +121,7 @@ const Profile = () => {
         </Card>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="gradient-card border-border/50">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -168,6 +169,9 @@ const Profile = () => {
               </p>
             </CardContent>
           </Card>
+
+          {/* Faucet Card */}
+          <FaucetCard />
         </div>
 
         {/* Tabs */}

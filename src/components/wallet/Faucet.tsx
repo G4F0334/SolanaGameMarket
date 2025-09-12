@@ -64,20 +64,26 @@ export const Faucet = () => {
     }));
 
     try {
-      // В реальном приложении здесь будет запрос к Solana Devnet faucet
-      // Для демонстрации используем mock запрос
-      const response = await fetch('https://faucet.solana.com/api/airdrop', {
+      // Используем Solana RPC API для получения airdrop
+      const response = await fetch('https://api.devnet.solana.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          pubkey: walletAddress,
-          amount: 1000000000 // 1 SOL в lamports
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'requestAirdrop',
+          params: [
+            walletAddress,
+            1000000000 // 1 SOL в lamports
+          ]
         })
       });
 
-      if (response.ok) {
+      const data = await response.json();
+      
+      if (data.result) {
         setFaucetState(prev => ({ 
           ...prev, 
           loading: false, 
@@ -85,19 +91,20 @@ export const Faucet = () => {
           lastRequest: Date.now()
         }));
         
-        // Обновляем баланс через 3 секунды
+        // Обновляем баланс через 5 секунд (devnet может быть медленным)
         setTimeout(() => {
           refreshBalance();
-        }, 3000);
+        }, 5000);
       } else {
-        throw new Error('Ошибка получения токенов из фаусета');
+        // Если RPC API не работает, показываем альтернативы
+        throw new Error(`RPC Error: ${data.error?.message || 'Неизвестная ошибка'}`);
       }
     } catch (error) {
       console.error('Faucet error:', error);
       setFaucetState(prev => ({ 
         ...prev, 
         loading: false, 
-        error: 'Не удалось получить токены. Попробуйте позже или используйте официальный faucet Solana.' 
+        error: 'RPC faucet недоступен. Используйте кнопку "Официальный Faucet" ниже.' 
       }));
     }
   };
@@ -249,6 +256,30 @@ export const Faucet = () => {
                       Отправить 1 SOL
                     </>
                   )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Official Faucet Link */}
+          <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    Официальный Solana Faucet
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-300">
+                    Гарантированно работает
+                  </p>
+                </div>
+                <Button
+                  onClick={() => window.open('https://faucet.solana.com/', '_blank')}
+                  variant="outline"
+                  size="sm"
+                  className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                >
+                  Открыть
                 </Button>
               </div>
             </CardContent>
