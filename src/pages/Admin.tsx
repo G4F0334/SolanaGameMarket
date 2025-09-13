@@ -26,6 +26,7 @@ import { useNFTStore } from "@/contexts/NFTContext";
 import { useSolanaWallet } from "@/hooks/useSolanaWallet";
 import { toast } from "sonner";
 import AddProductForm from "@/components/admin/AddProductForm";
+import AddNFTForm from "@/components/admin/AddNFTForm";
 import GameManagement from "@/components/admin/GameManagement";
 import AdminStats from "@/components/admin/AdminStats";
 
@@ -39,7 +40,7 @@ const Admin = () => {
 
   // Простая авторизация для админки
   const handleLogin = () => {
-    if (adminKey === "admin123" || adminKey === "solana2024") {
+    if (adminKey === "1234") {
       setIsAuthenticated(true);
       toast.success("Добро пожаловать в админ панель!");
     } else {
@@ -82,12 +83,7 @@ const Admin = () => {
             <Button onClick={handleLogin} className="w-full">
               Войти в админ панель
             </Button>
-            <div className="text-xs text-muted-foreground text-center">
-              <p>
-                Тестовые ключи: <code>admin123</code> или{" "}
-                <code>solana2024</code>
-              </p>
-            </div>
+            <div className="text-xs text-muted-foreground text-center"></div>
           </CardContent>
         </Card>
       </div>
@@ -221,17 +217,17 @@ const Admin = () => {
                   <DialogTrigger asChild>
                     <Button className="gradient-solana text-white">
                       <Plus className="mr-2 h-4 w-4" />
-                      Добавить товар
+                      Добавить NFT
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
                         <Package className="h-5 w-5" />
-                        Добавить новый товар
+                        Добавить новый NFT
                       </DialogTitle>
                     </DialogHeader>
-                    <AddProductForm
+                    <AddNFTForm
                       onClose={() => setIsAddProductModalOpen(false)}
                     />
                   </DialogContent>
@@ -278,14 +274,6 @@ const Admin = () => {
                           <span className="font-bold text-primary">
                             {nft.price} {nft.currency}
                           </span>
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline">
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button size="sm" variant="destructive">
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
                         </div>
                       </CardContent>
                     </Card>

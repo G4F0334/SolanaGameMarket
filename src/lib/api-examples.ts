@@ -342,6 +342,34 @@ export const loadAnalytics = async () => {
   }
 };
 
+// Пример асинхронного запроса для добавления NFT
+export const addNFTItem = async (nftData: {
+  name: string;
+  image: File | string;
+  game: string;
+  typeRarity: string; // например: "Weapon/Legendary"
+  description: string;
+  nft: string;
+  created_at: string;
+  updated_at: string;
+}) => {
+  // Преобразование typeRarity в отдельные поля (если нужно)
+  const [type, rarity] = nftData.typeRarity.split("/");
+  // Здесь пример отправки на API (или FormData, если файл)
+  // const formData = new FormData();
+  // formData.append('name', nftData.name);
+  // formData.append('image', nftData.image);
+  // ...
+  // await fetch('/api/nfts', { method: 'POST', body: formData });
+  // Или через apiService:
+  // await apiService.createNFT({ ... });
+  return {
+    ...nftData,
+    type: type?.trim(),
+    rarity: rarity?.trim(),
+  };
+};
+
 // ==================== ХУКИ ДЛЯ REACT КОМПОНЕНТОВ ====================
 
 // Пример хука для загрузки NFT

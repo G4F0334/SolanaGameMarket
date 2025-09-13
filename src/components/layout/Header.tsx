@@ -94,16 +94,6 @@ const Header = () => {
               >
                 Профиль
               </Link>
-              <Link
-                to="/admin"
-                className={`text-sm font-medium transition-all duration-300 hover:text-white ${
-                  isActivePath("/admin")
-                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg"
-                    : "text-muted-foreground"
-                }`}
-              >
-                Админ
-              </Link>
             </nav>
           </div>
 
