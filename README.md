@@ -1,4 +1,4 @@
-# 🎮 Game Items Market Database
+# 🎮 Game Items Market
 
 > NFT Gaming Items Marketplace powered by Solana Blockchain
 
