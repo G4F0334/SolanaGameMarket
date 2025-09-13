@@ -31,20 +31,6 @@ const mockUsersDatabase = [
         updated_at: new Date().toISOString()
     },
     {
-        id: "3",
-        username: "ArchMage", 
-        walletAddress: "4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9",
-        joinDate: "2024-01-28",
-        avatar: null,
-        stats: {
-            nftsOwned: 0,
-            nftsSold: 0,
-            totalVolume: 0
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-    },
-    {
         id: "4",
         username: "ElvenArcher",
         walletAddress: "9MpKzQ5WnBvR2fG8YdN3jXc1sTbH7LwE6VqZmP4RkA2D",

@@ -37,11 +37,6 @@ const initDatabase = async () => {
                     joinDate: "2024-02-10"
                 },
                 {
-                    username: "ArchMage",
-                    walletAddress: "4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9",
-                    joinDate: "2024-01-28"
-                },
-                {
                     username: "ElvenArcher",
                     walletAddress: "9MpKzQ5WnBvR2fG8YdN3jXc1sTbH7LwE6VqZmP4RkA2D",
                     joinDate: "2024-03-05"
