@@ -148,22 +148,6 @@ anchor test
 anchor deploy
 ```
 
-## 📚 Структура базы данных
-
-```sql
-CREATE TABLE items (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    image TEXT,
-    game VARCHAR(100) NOT NULL,
-    type VARCHAR(100) NOT NULL DEFAULT 'weapon',
-    description TEXT,
-    nft VARCHAR(44) UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
 ## 🐳 Docker
 
 ### Запуск через Docker Compose
