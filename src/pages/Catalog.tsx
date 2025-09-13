@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Grid, List } from "lucide-react";
+import { Search, Filter, Grid, List, Loader2 } from "lucide-react";
 import NFTCard, { NFT } from "@/components/nft/NFTCard";
 import { useGamesStore } from "@/contexts/GamesContext";
+import { apiService, NFTItem } from "@/services/api";
 
 const Catalog = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,115 +21,114 @@ const Catalog = () => {
   const [selectedRarity, setSelectedRarity] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [nftItems, setNftItems] = useState<NFT[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
   const { getActiveGames } = useGamesStore();
 
-  // TODO: Заменить на API запрос
-  // Mock данные - в будущем будут загружаться с бэкенда
-  const allNFTs: NFT[] = [
+  // Функция для преобразования NFTItem в NFT формат
+  const convertToNFT = (item: NFTItem): NFT => ({
+    id: item.id.toString(),
+    title: item.name,
+    image: item.image || "/placeholder.svg",
+    price: item.price || 0,
+    currency: "SOL",
+    game: item.game,
+    rarity: item.rarity || "Common",
+    seller: item.seller || "Unknown",
+    sellerUsername: item.sellerUsername || item.seller, // используем никнейм если есть
+    ownerAddress: item.ownerAddress || item.seller, // адрес владельца для проверки
+  });
+
+  // Fallback NFT данные на случай проблем с сервером
+  const fallbackNFTs: NFT[] = [
     {
-      id: "1",
-      title: "Dragon Sword of Flames",
-      image:
-        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop",
-      price: 2.5,
-      currency: "SOL",
-      game: "Fantasy Quest",
-      rarity: "Legendary",
-      seller: "DragonMaster",
-    },
-    {
-      id: "2",
-      title: "Cyberpunk Armor Set",
-      image:
-        "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=400&fit=crop",
+      id: "fallback_1",
+      title: "Cyber Armor",
+      image: "/cyber-armor.jpg",
       price: 1.8,
       currency: "SOL",
-      game: "Cyber City",
+      game: "Neon Runners",
       rarity: "Epic",
-      seller: "CyberWarrior",
+      seller: "TechNinja",
     },
     {
-      id: "3",
+      id: "fallback_2",
       title: "Mystic Staff",
-      image:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=400&fit=crop",
-      price: 0.9,
+      image: "/mystic-staff.jpg",
+      price: 3.2,
       currency: "SOL",
       game: "Magic Realm",
-      rarity: "Rare",
-      seller: "MagicUser",
+      rarity: "Legendary",
+      seller: "ArchMage",
     },
     {
-      id: "4",
+      id: "fallback_3",
       title: "Lightning Bow",
-      image:
-        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=400&fit=crop",
+      image: "/placeholder.svg",
       price: 1.2,
       currency: "SOL",
-      game: "Fantasy Quest",
-      rarity: "Rare",
+      game: "Battle Arena",
+      rarity: "Epic",
       seller: "ElvenArcher",
     },
-    {
-      id: "5",
-      title: "Plasma Rifle",
-      image:
-        "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&h=400&fit=crop",
-      price: 3.1,
-      currency: "SOL",
-      game: "Space Warriors",
-      rarity: "Legendary",
-      seller: "SpaceCommander",
-    },
-    {
-      id: "6",
-      title: "Crystal Shield",
-      image:
-        "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&h=400&fit=crop",
-      price: 0.7,
-      currency: "SOL",
-      game: "Magic Realm",
-      rarity: "Common",
-      seller: "CrystalMage",
-    },
   ];
+
+  // Загрузка данных с сервера
+  useEffect(() => {
+    const loadNFTs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Пытаемся загрузить с сервера
+        const response = await apiService.getNFTList();
+
+        if (response.success) {
+          const convertedNFTs = response.nfts.map(convertToNFT);
+          setNftItems(convertedNFTs);
+          setTotalCount(convertedNFTs.length);
+        } else {
+          throw new Error('Server returned unsuccessful response');
+        }
+      } catch (error) {
+        console.error('Error loading NFTs from server:', error);
+        console.warn('Using fallback NFT data');
+        
+        // Используем fallback данные
+        setNftItems(fallbackNFTs);
+        setTotalCount(fallbackNFTs.length);
+        setError('Подключение к серверу недоступно. Показаны демо данные.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNFTs();
+  }, []); // Убираем dependencies чтобы загрузка не повторялась
 
   const activeGames = getActiveGames();
   const games = ["all", ...activeGames.map((game) => game.name)];
   const rarities = ["all", "Common", "Rare", "Epic", "Legendary"];
 
-  // TODO: Добавить useEffect для загрузки NFT с API
-  // useEffect(() => {
-  //   const loadNFTs = async () => {
-  //     try {
-  //       const response = await apiService.getNFTs({
-  //         page: 1,
-  //         limit: 100,
-  //         game: selectedGame !== "all" ? selectedGame : undefined,
-  //         rarity: selectedRarity !== "all" ? selectedRarity : undefined,
-  //         search: searchQuery || undefined,
-  //         sortBy: sortBy as any,
-  //       });
-  //       if (response.success) {
-  //         setAllNFTs(response.data.items);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error loading NFTs:', error);
-  //     }
-  //   };
-  //   loadNFTs();
-  // }, [selectedGame, selectedRarity, searchQuery, sortBy]);
-
-  const filteredNFTs = allNFTs.filter((nft) => {
-    const matchesSearch =
+  // Фильтрация по редкости (клиентская фильтрация)
+  const filteredNFTs = nftItems.filter((nft) => {
+    const matchesRarity = selectedRarity === "all" || nft.rarity === selectedRarity;
+    const matchesSearch = searchQuery === "" || 
       nft.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       nft.game.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesGame = selectedGame === "all" || nft.game === selectedGame;
-    const matchesRarity =
-      selectedRarity === "all" || nft.rarity === selectedRarity;
-
-    return matchesSearch && matchesGame && matchesRarity;
+    
+    return matchesRarity && matchesSearch && matchesGame;
   });
+
+  // Обработчик покупки NFT
+  const handleNFTPurchase = (purchasedNFT: NFT) => {
+    // Удаляем купленный NFT из каталога
+    setNftItems(prev => prev.filter(nft => nft.id !== purchasedNFT.id));
+    setTotalCount(prev => prev - 1);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -199,13 +199,16 @@ const Catalog = () => {
             </div>
 
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-              <div className="flex items-center space-x-4">
-                <Badge variant="secondary">
-                  {filteredNFTs.length} предметов найдено
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary">
+                {loading ? "Загрузка..." : `${filteredNFTs.length} из ${totalCount} предметов`}
+              </Badge>
+              {error && (
+                <Badge variant="destructive">
+                  Ошибка загрузки
                 </Badge>
-              </div>
-
-              <div className="flex items-center space-x-2">
+              )}
+            </div>              <div className="flex items-center space-x-2">
                 <Button
                   variant={viewMode === "grid" ? "default" : "outline"}
                   size="sm"
@@ -226,7 +229,33 @@ const Catalog = () => {
         </Card>
 
         {/* NFT Grid */}
-        {filteredNFTs.length > 0 ? (
+        {loading ? (
+          <Card className="gradient-card border-border/50">
+            <CardContent className="p-12 text-center">
+              <Loader2 className="h-16 w-16 text-muted-foreground mx-auto mb-4 animate-spin" />
+              <h3 className="text-xl font-semibold mb-2">Загрузка NFT...</h3>
+              <p className="text-muted-foreground">
+                Получаем данные с сервера
+              </p>
+            </CardContent>
+          </Card>
+        ) : error ? (
+          <Card className="gradient-card border-border/50">
+            <CardContent className="p-12 text-center">
+              <Filter className="h-16 w-16 text-destructive mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Ошибка загрузки</h3>
+              <p className="text-muted-foreground mb-4">
+                {error}
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
+                Обновить страницу
+              </Button>
+            </CardContent>
+          </Card>
+        ) : filteredNFTs.length > 0 ? (
           <div
             className={`grid gap-6 ${
               viewMode === "grid"
@@ -239,7 +268,11 @@ const Catalog = () => {
                 key={nft.id}
                 className={viewMode === "list" ? "max-w-2xl" : ""}
               >
-                <NFTCard key={nft.id} nft={nft} />
+                <NFTCard 
+                  key={nft.id} 
+                  nft={nft} 
+                  onPurchase={handleNFTPurchase}
+                />
               </div>
             ))}
           </div>

@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useNFTStore } from "@/contexts/NFTContext";
 import { useSolanaWallet } from "@/hooks/useSolanaWallet";
+import { Faucet } from "@/components/wallet/Faucet";
 import { toast } from "sonner";
 import AddProductForm from "@/components/admin/AddProductForm";
 import GameManagement from "@/components/admin/GameManagement";
@@ -199,10 +200,11 @@ const Admin = () => {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dashboard">Панель управления</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="games">Игры</TabsTrigger>
+            <TabsTrigger value="utilities">Утилиты</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
 
@@ -318,6 +320,54 @@ const Admin = () => {
 
           <TabsContent value="games">
             <GameManagement />
+          </TabsContent>
+
+          <TabsContent value="utilities">
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold">Утилиты для администратора</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Faucet для администратора */}
+                <Card className="gradient-card border-border/50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Package className="h-5 w-5" />
+                      Solana Devnet Faucet
+                    </CardTitle>
+                    <p className="text-muted-foreground">
+                      Получение тестовых SOL токенов для разработки и тестирования
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <Faucet />
+                  </CardContent>
+                </Card>
+
+                {/* Дополнительные утилиты */}
+                <Card className="gradient-card border-border/50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Settings className="h-5 w-5" />
+                      Инструменты разработчика
+                    </CardTitle>
+                    <p className="text-muted-foreground">
+                      Дополнительные утилиты для управления приложением
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Button variant="outline" className="w-full">
+                      Очистить кеш приложения
+                    </Button>
+                    <Button variant="outline" className="w-full">
+                      Экспорт данных
+                    </Button>
+                    <Button variant="outline" className="w-full">
+                      Проверить подключение к RPC
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="settings">

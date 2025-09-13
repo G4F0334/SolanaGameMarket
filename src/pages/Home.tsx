@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
@@ -12,27 +13,63 @@ import {
   ArrowDown,
 } from "lucide-react";
 import NFTCard, { NFT } from "@/components/nft/NFTCard";
-import { useGamesStore } from "@/contexts/GamesContext";
-import dragonSwordImg from "@/assets/dragon-sword.jpg";
-import cyberArmorImg from "@/assets/cyber-armor.jpg";
-import mysticStaffImg from "@/assets/mystic-staff.jpg";
-import fantasyQuestImg from "@/assets/game-fantasy-quest.jpg";
-import cyberCityImg from "@/assets/game-cyber-city.jpg";
-import magicRealmImg from "@/assets/game-magic-realm.jpg";
-import spaceWarriorsImg from "@/assets/game-space-warriors.jpg";
-import battleArenaImg from "@/assets/game-battle-arena.jpg";
+import { apiService } from "@/services/api";
+// Импорты реальных изображений игр
+import counterStrike2Img from "@/assets/CounterStrike2.jpg";
+import dota2Img from "@/assets/dota2.jpg";
+import valorantImg from "@/assets/Valorant.jpeg";
+import warframeImg from "@/assets/warframe.webp";
 
 const Home = () => {
-  const { getActiveGames } = useGamesStore();
-  const activeGames = getActiveGames();
+  // Состояние для популярных NFT
+  const [featuredNFTs, setFeaturedNFTs] = useState<NFT[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // TODO: Заменить на API запрос
-  // Mock данные - в будущем будут загружаться с бэкенда
-  const featuredNFTs: NFT[] = [
+  // Функция для преобразования NFTItem в NFT формат
+  const convertToNFT = (item: any): NFT => ({
+    id: item.id.toString(),
+    title: item.name,
+    image: item.image || "/placeholder.svg",
+    price: item.price || 0,
+    currency: "SOL",
+    game: item.game,
+    rarity: item.rarity || "Common",
+    seller: item.seller || "Unknown",
+  });
+
+  // Загрузка популярных NFT с сервера
+  useEffect(() => {
+    const loadFeaturedNFTs = async () => {
+      try {
+        setLoading(true);
+        const response = await apiService.getFeaturedNFTs();
+        
+        if (response.success) {
+          const convertedNFTs = response.nfts.map(convertToNFT);
+          setFeaturedNFTs(convertedNFTs);
+        } else {
+          // Fallback к моковым данным при ошибке
+          console.warn('Failed to load featured NFTs from server, using fallback data');
+          setFeaturedNFTs(fallbackNFTs);
+        }
+      } catch (error) {
+        console.error('Error loading featured NFTs:', error);
+        // Fallback к моковым данным при ошибке
+        setFeaturedNFTs(fallbackNFTs);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFeaturedNFTs();
+  }, []);
+
+  // Fallback данные на случай проблем с сервером
+  const fallbackNFTs: NFT[] = [
     {
       id: "1",
       title: "Dragon Sword of Flames",
-      image: dragonSwordImg,
+      image: "/placeholder.svg",
       price: 2.5,
       currency: "SOL",
       game: "Fantasy Quest",
@@ -42,7 +79,7 @@ const Home = () => {
     {
       id: "2",
       title: "Cyberpunk Armor Set",
-      image: cyberArmorImg,
+      image: "/placeholder.svg",
       price: 1.8,
       currency: "SOL",
       game: "Cyber City",
@@ -52,7 +89,7 @@ const Home = () => {
     {
       id: "3",
       title: "Mystic Staff",
-      image: mysticStaffImg,
+      image: "/placeholder.svg",
       price: 0.9,
       currency: "SOL",
       game: "Magic Realm",
@@ -62,7 +99,7 @@ const Home = () => {
     {
       id: "4",
       title: "Lightning Bow",
-      image: battleArenaImg,
+      image: "/placeholder.svg",
       price: 1.2,
       currency: "SOL",
       game: "Battle Arena",
@@ -228,9 +265,23 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {featuredNFTs.map((nft) => (
-              <NFTCard key={nft.id} nft={nft} />
-            ))}
+            {loading ? (
+              // Skeleton загрузки
+              Array(4).fill(0).map((_, index) => (
+                <div key={index} className="bg-card rounded-lg border border-border/50 p-4 animate-pulse">
+                  <div className="aspect-square bg-muted rounded-lg mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                    <div className="h-4 bg-muted rounded w-1/3"></div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              featuredNFTs.map((nft) => (
+                <NFTCard key={nft.id} nft={nft} />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -255,7 +306,7 @@ const Home = () => {
               {/* Step 1 - Left */}
               <div className="relative flex items-center mb-16">
                 <div className="w-1/2 pr-8 text-right">
-                  <div className="bg-card border border-border/50 rounded-xl p-6 shadow-lg">
+                  <div className="bg-gray-900 border border-border/50 rounded-xl p-8 shadow-lg">
                     <div className="flex items-center justify-end space-x-3 mb-3">
                       <h3 className="text-xl font-semibold">
                         Подключение кошелька
@@ -287,7 +338,7 @@ const Home = () => {
                   <ShoppingCart className="h-6 w-6" />
                 </div>
                 <div className="w-1/2 pl-8">
-                  <div className="bg-card border border-border/50 rounded-xl p-6 shadow-lg">
+                  <div className="bg-gray-900 border border-border/50 rounded-xl p-8 shadow-lg">
                     <div className="flex items-center space-x-3 mb-3">
                       <div className="w-8 h-8 rounded-full gradient-solana text-white flex items-center justify-center text-lg font-bold">
                         2
@@ -309,7 +360,7 @@ const Home = () => {
               {/* Step 3 - Left */}
               <div className="relative flex items-center mb-16">
                 <div className="w-1/2 pr-8 text-right">
-                  <div className="bg-card border border-border/50 rounded-xl p-6 shadow-lg">
+                  <div className="bg-gray-900 border border-border/50 rounded-xl p-8 shadow-lg">
                     <div className="flex items-center justify-end space-x-3 mb-3">
                       <h3 className="text-xl font-semibold">
                         Использование в играх
@@ -341,7 +392,7 @@ const Home = () => {
                   <ArrowLeftRight className="h-6 w-6" />
                 </div>
                 <div className="w-1/2 pl-8">
-                  <div className="bg-card border border-border/50 rounded-xl p-6 shadow-lg">
+                  <div className="bg-gray-900 border border-border/50 rounded-xl p-8 shadow-lg">
                     <div className="flex items-center space-x-3 mb-3">
                       <div className="w-8 h-8 rounded-full gradient-solana text-white flex items-center justify-center text-lg font-bold">
                         4
@@ -380,31 +431,101 @@ const Home = () => {
               уникальной экосистемы игровых NFT
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
-              {activeGames.slice(0, 4).map((game) => (
-                <Card
-                  key={game.id}
-                  className="group w-full rounded-lg bg-card border-2 border-transparent transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
-                  style={{
-                    borderImage: "linear-gradient(90deg, #3B82F6, #14F195) 1",
-                  }}
-                >
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={game.image || cyberCityImg}
-                      alt={game.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <CardContent className="p-4 text-center">
-                    <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
-                      {game.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {game.category} • {game.nftCount} NFT
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+              {/* CS2 */}
+              <Card
+                className="group w-full rounded-lg bg-card border-2 border-transparent transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+                style={{
+                  borderImage: "linear-gradient(90deg, #3B82F6, #14F195) 1",
+                }}
+              >
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={counterStrike2Img}
+                    alt="Counter-Strike 2"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <CardContent className="p-4 text-center">
+                  <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
+                    Counter-Strike 2
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Шутер • 2,456 NFT
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Dota 2 */}
+              <Card
+                className="group w-full rounded-lg bg-card border-2 border-transparent transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+                style={{
+                  borderImage: "linear-gradient(90deg, #3B82F6, #14F195) 1",
+                }}
+              >
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={dota2Img}
+                    alt="Dota 2"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <CardContent className="p-4 text-center">
+                  <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
+                    Dota 2
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    MOBA • 1,834 NFT
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Valorant */}
+              <Card
+                className="group w-full rounded-lg bg-card border-2 border-transparent transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+                style={{
+                  borderImage: "linear-gradient(90deg, #3B82F6, #14F195) 1",
+                }}
+              >
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={valorantImg}
+                    alt="Valorant"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <CardContent className="p-4 text-center">
+                  <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
+                    Valorant
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Тактический шутер • 987 NFT
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Warframe */}
+              <Card
+                className="group w-full rounded-lg bg-card border-2 border-transparent transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+                style={{
+                  borderImage: "linear-gradient(90deg, #3B82F6, #14F195) 1",
+                }}
+              >
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={warframeImg}
+                    alt="Warframe"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <CardContent className="p-4 text-center">
+                  <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
+                    Warframe
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Action • 1,245 NFT
+                  </p>
+                </CardContent>
+              </Card>
             </div>
             <div className="mt-8">
               <Link to="/catalog">

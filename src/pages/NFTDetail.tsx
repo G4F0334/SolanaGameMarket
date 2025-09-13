@@ -1,30 +1,71 @@
-import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Share2, Flag, Clock, ShoppingCart } from "lucide-react";
+import { Share2, Flag, Clock, ShoppingCart, Loader2 } from "lucide-react";
 import { NFT } from "@/components/nft/NFTCard";
+import { apiService } from "@/services/api";
+import { useSolanaWallet } from "@/hooks/useSolanaWallet";
+import { useNFTStore } from "@/contexts/NFTContext";
+import { toast } from "sonner";
 import dragonSwordImg from "@/assets/dragon-sword.jpg";
 
 const NFTDetail = () => {
   const { id } = useParams();
-  const [isLiked, setIsLiked] = useState(false);
-  const [isConnected] = useState(true); // Mock - будет получаться из контекста авторизации
+  const navigate = useNavigate();
+  const [nft, setNft] = useState<NFT | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
+  const { connected, address, balance, updateBalance } = useSolanaWallet();
+  const { buyNFT, addToPurchaseHistory } = useNFTStore();
 
-  // Mock данные - в будущем будут загружаться с бэкенда по ID
-  const nft: NFT = {
-    id: id || "1",
-    title: "Dragon Sword of Flames",
-    image: dragonSwordImg,
-    price: 1,
-    currency: "SOL",
-    game: "Fantasy Quest",
-    rarity: "Legendary",
-    seller: "DragonMaster",
-  };
+  // Загрузка данных NFT
+  useEffect(() => {
+    const loadNFT = async () => {
+      if (!id) return;
+      
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await apiService.getNFTById(id);
+        
+        if (response.success && response.nft) {
+          // Конвертируем данные с сервера в формат NFT
+          const nftData: NFT = {
+            id: response.nft.id.toString(),
+            title: response.nft.name,
+            image: response.nft.image || "/placeholder.svg",
+            price: response.nft.price || 0,
+            currency: "SOL",
+            game: response.nft.game,
+            rarity: response.nft.rarity || "Common",
+            seller: response.nft.seller || "Unknown",
+            sellerUsername: response.nft.sellerUsername,
+            ownerAddress: response.nft.ownerAddress,
+            description: response.nft.description
+          };
+          setNft(nftData);
+        } else {
+          setError("NFT не найден");
+        }
+      } catch (error) {
+        console.error("Error loading NFT:", error);
+        setError("Ошибка загрузки NFT");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNFT();
+  }, [id]);
+
+  // Проверяем, является ли пользователь владельцем
+  const isOwner = address && nft && (nft.ownerAddress === address || nft.seller === address);
 
   const rarityColors = {
     Common: "bg-slate-500",
@@ -33,10 +74,92 @@ const NFTDetail = () => {
     Legendary: "bg-amber-500",
   };
 
-  const handleBuy = () => {
-    // Логика покупки NFT
-    console.log("Покупка NFT", nft.id);
+  const handleBuy = async () => {
+    if (!nft || !address) {
+      toast.error("Подключите кошелек для покупки NFT");
+      return;
+    }
+
+    if (balance < nft.price) {
+      toast.error("Недостаточно средств на балансе");
+      return;
+    }
+
+    try {
+      setPurchasing(true);
+      
+      const result = await buyNFT(nft.id, address);
+      
+      if (result && result.success) {
+        addToPurchaseHistory(nft);
+        
+        if (updateBalance) {
+          await updateBalance();
+        }
+        
+        toast.success(`Вы успешно купили ${nft.title} за ${nft.price} ${nft.currency}!`);
+        
+        // Обновляем данные NFT после покупки
+        setNft(prev => prev ? { ...prev, ownerAddress: address } : null);
+
+        // Редирект на страницу профиля после покупки
+        setTimeout(() => {
+          navigate('/profile');
+        }, 1500);
+      } else {
+        throw new Error(result?.message || 'Purchase failed');
+      }
+    } catch (error) {
+      console.error('Purchase error:', error);
+      toast.error("Ошибка при покупке NFT. Попробуйте еще раз.");
+    } finally {
+      setPurchasing(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container max-w-screen-2xl py-8">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <Card className="gradient-card border-border/50">
+              <CardContent className="p-12 text-center">
+                <Loader2 className="h-16 w-16 text-muted-foreground mx-auto mb-4 animate-spin" />
+                <h3 className="text-xl font-semibold mb-2">Загрузка NFT...</h3>
+                <p className="text-muted-foreground">
+                  Получаем данные с сервера
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !nft) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container max-w-screen-2xl py-8">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <Card className="gradient-card border-border/50">
+              <CardContent className="p-12 text-center">
+                <h3 className="text-xl font-semibold mb-2">Ошибка</h3>
+                <p className="text-muted-foreground mb-4">
+                  {error || "NFT не найден"}
+                </p>
+                <Link to="/catalog">
+                  <Button variant="outline">
+                    Вернуться в каталог
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const similarNFTs: NFT[] = [
     {
@@ -147,14 +270,23 @@ const NFTDetail = () => {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              {isConnected ? (
+              {connected && !isOwner ? (
                 <Button
                   onClick={handleBuy}
                   className="w-full gradient-solana text-white glow-solana"
                   size="lg"
+                  disabled={purchasing || balance < nft.price}
                 >
                   <ShoppingCart className="mr-2 h-5 w-5" />
-                  Купить сейчас
+                  {purchasing
+                    ? "Покупка..."
+                    : balance < nft.price
+                    ? "Недостаточно SOL"
+                    : "Купить сейчас"}
+                </Button>
+              ) : isOwner ? (
+                <Button variant="outline" size="lg" className="w-full" disabled>
+                  Это ваш NFT
                 </Button>
               ) : (
                 <Button variant="outline" size="lg" className="w-full">
@@ -170,10 +302,14 @@ const NFTDetail = () => {
               <h3 className="font-semibold mb-4">Продавец</h3>
               <div className="flex items-center space-x-3 p-4 rounded-lg bg-secondary">
                 <Avatar>
-                  <AvatarFallback>{nft.seller[0]}</AvatarFallback>
+                  <AvatarFallback>
+                    {(nft.sellerUsername || nft.seller || "U")[0]}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="font-medium">{nft.seller}</div>
+                  <div className="font-medium">
+                    {nft.sellerUsername || nft.seller || "Неизвестно"}
+                  </div>
                   <div className="text-sm text-muted-foreground">
                     Подтвержденный продавец
                   </div>

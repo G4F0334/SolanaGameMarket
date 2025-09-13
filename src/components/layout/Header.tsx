@@ -10,40 +10,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WalletConnect } from "@/components/wallet/WalletConnect";
+import { WalletConnectWithUsername } from "@/components/wallet/WalletConnectWithUsername";
 import { NetworkStatus } from "@/components/wallet/NetworkStatus";
 import { useSolanaWallet } from "@/hooks/useSolanaWallet";
 import { useUserData } from "@/hooks/useUserData";
 import UserProfile from "@/components/ui/user-profile";
 
 const Header = () => {
-  const [tempUsername, setTempUsername] = useState("");
-  const [showUsernameModal, setShowUsernameModal] = useState(false);
   const location = useLocation();
   const { connected, address, connecting } = useSolanaWallet();
-  const { username, isLoggedIn, joinDate, setUsername, logout } = useUserData();
-
-  // Отслеживание подключения кошелька для показа модала имени пользователя
-  useEffect(() => {
-    console.log("Header: состояние изменилось", {
-      connected,
-      isLoggedIn,
-      connecting,
-      address,
-    });
-
-    if (connected && !connecting && !isLoggedIn && address) {
-      console.log("Header: показываем модал имени пользователя");
-      setShowUsernameModal(true);
-    }
-  }, [connected, isLoggedIn, connecting, address]);
-
-  const handleUsernameSubmit = () => {
-    if (tempUsername.trim()) {
-      setUsername(tempUsername.trim());
-      setTempUsername("");
-      setShowUsernameModal(false);
-    }
-  };
+  const { username, isLoggedIn, logout } = useUserData();
 
   const handleDisconnect = () => {
     logout();
@@ -94,16 +70,7 @@ const Header = () => {
               >
                 Профиль
               </Link>
-              <Link
-                to="/admin"
-                className={`text-sm font-medium transition-all duration-300 hover:text-white ${
-                  isActivePath("/admin")
-                    ? "text-white bg-gradient-to-r from-solana-purple to-solana-green px-4 py-2 rounded-full shadow-lg"
-                    : "text-muted-foreground"
-                }`}
-              >
-                Админ
-              </Link>
+              
             </nav>
           </div>
 
@@ -112,47 +79,17 @@ const Header = () => {
               <NetworkStatus />
             </div>
             {connected && isLoggedIn && !connecting ? (
-              <UserProfile
+              <UserProfile 
                 username={username}
                 walletAddress={address || ""}
                 onDisconnect={handleDisconnect}
               />
             ) : (
-              <WalletConnect />
+              <WalletConnectWithUsername />
             )}
           </div>
         </div>
       </header>
-
-      {/* Username Modal */}
-      <Dialog open={showUsernameModal} onOpenChange={setShowUsernameModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Добро пожаловать!</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Введите ваш никнейм</Label>
-              <Input
-                id="username"
-                placeholder="Введите никнейм"
-                value={tempUsername}
-                onChange={(e) => setTempUsername(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleUsernameSubmit()}
-              />
-            </div>
-            <Button
-              onClick={handleUsernameSubmit}
-              className="w-full gradient-solana text-white"
-              disabled={!tempUsername.trim()}
-            >
-              Продолжить
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
-};
-
-export default Header;
+};export default Header;

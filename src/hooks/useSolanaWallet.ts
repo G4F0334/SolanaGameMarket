@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { solanaWallet } from '@/lib/solana';
 import { storage, STORAGE_KEYS, SavedWalletState } from '@/lib/storage';
+import { apiService } from '@/services/api';
 
 interface WalletState {
   publicKey: PublicKey | null;
@@ -56,8 +57,24 @@ export const useSolanaWallet = () => {
       console.log('useSolanaWallet: результат подключения', result);
       
       if (result.success && result.publicKey) {
-        const balance = await solanaWallet.getBalance();
         const address = result.publicKey.toString();
+        
+        // Получаем баланс с сервера
+        let balance = 0;
+        try {
+          const serverBalanceResult = await apiService.getWalletBalance(address);
+          if (serverBalanceResult.success && typeof serverBalanceResult.balance === 'number') {
+            balance = serverBalanceResult.balance;
+            console.log(`💰 Server balance: ${balance} SOL`);
+          } else {
+            // Fallback на Solana баланс
+            balance = await solanaWallet.getBalance();
+            console.log(`💰 Fallback Solana balance: ${balance} SOL`);
+          }
+        } catch (balanceError) {
+          console.warn('Failed to get balance, using 0:', balanceError);
+          balance = 0;
+        }
         
         console.log('useSolanaWallet: кошелек подключен успешно', { address, balance });
         
@@ -92,6 +109,41 @@ export const useSolanaWallet = () => {
         connecting: false 
       }));
       throw error;
+    }
+  };
+
+  // Обновление баланса (теперь с сервера)
+  const updateBalance = async () => {
+    if (!walletState.connected || !walletState.address) {
+      return;
+    }
+    
+    try {
+      // Сначала пытаемся получить баланс с сервера
+      const serverBalanceResult = await apiService.getWalletBalance(walletState.address);
+      
+      if (serverBalanceResult.success && typeof serverBalanceResult.balance === 'number') {
+        console.log(`💰 Server balance for ${walletState.address}: ${serverBalanceResult.balance} SOL`);
+        setWalletState(prev => ({ ...prev, balance: serverBalanceResult.balance }));
+        return serverBalanceResult.balance;
+      } else {
+        // Если сервер недоступен, используем Solana баланс как fallback
+        console.log('⚠️ Server balance unavailable, using Solana balance as fallback');
+        const balance = await solanaWallet.getBalance();
+        setWalletState(prev => ({ ...prev, balance }));
+        return balance;
+      }
+    } catch (error) {
+      console.error('useSolanaWallet: ошибка обновления баланса', error);
+      // Fallback на Solana баланс
+      try {
+        const balance = await solanaWallet.getBalance();
+        setWalletState(prev => ({ ...prev, balance }));
+        return balance;
+      } catch (fallbackError) {
+        console.error('useSolanaWallet: ошибка fallback баланса', fallbackError);
+        return walletState.balance;
+      }
     }
   };
 
@@ -143,8 +195,22 @@ export const useSolanaWallet = () => {
         await solanaWallet.checkConnection();
         
         if (solanaWallet.connected && solanaWallet.publicKey) {
-          const balance = await solanaWallet.getBalance();
           const address = solanaWallet.publicKey.toString();
+          
+          // Получаем баланс с сервера
+          let balance = 0;
+          try {
+            const serverBalanceResult = await apiService.getWalletBalance(address);
+            if (serverBalanceResult.success && typeof serverBalanceResult.balance === 'number') {
+              balance = serverBalanceResult.balance;
+            } else {
+              // Fallback на Solana баланс
+              balance = await solanaWallet.getBalance();
+            }
+          } catch (balanceError) {
+            console.warn('Failed to get balance during initialization, using 0:', balanceError);
+            balance = 0;
+          }
           
           console.log('useSolanaWallet: кошелек уже подключен при загрузке:', address);
           
@@ -251,6 +317,7 @@ export const useSolanaWallet = () => {
     connect,
     disconnect,
     refreshBalance,
+    updateBalance,
     formatAddress,
     isPhantomInstalled: solanaWallet.isPhantomInstalled()
   };

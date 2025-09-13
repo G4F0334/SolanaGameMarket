@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { storage, STORAGE_KEYS, SavedUserData } from '@/lib/storage';
+import { apiService } from '@/services/api';
+import { useSolanaWallet } from './useSolanaWallet';
 
 interface UserState {
   username: string;
@@ -13,6 +15,7 @@ export const useUserData = () => {
     isLoggedIn: false,
     joinDate: ''
   });
+  const { address } = useSolanaWallet();
 
   // Сохранение данных пользователя
   const saveUserData = (username: string, joinDate?: string) => {
@@ -33,7 +36,7 @@ export const useUserData = () => {
   };
 
   // Установка имени пользователя
-  const setUsername = (username: string) => {
+  const setUsername = async (username: string) => {
     const joinDate = new Date().toLocaleDateString('ru-RU', { 
       year: 'numeric', 
       month: 'long' 
@@ -46,6 +49,16 @@ export const useUserData = () => {
     });
     
     saveUserData(username, joinDate);
+
+    // Сохраняем данные на сервере если кошелек подключен
+    if (address) {
+      try {
+        await apiService.createOrUpdateUser(username, address);
+        console.log('✅ User data saved to server');
+      } catch (error) {
+        console.error('❌ Failed to save user data to server:', error);
+      }
+    }
   };
 
   // Выход пользователя

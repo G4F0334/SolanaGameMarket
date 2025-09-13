@@ -1,27 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { NFT } from "@/components/nft/NFTCard";
 import { storage, STORAGE_KEYS } from "@/lib/storage";
-// TODO: Заменить на API сервис
-// import { apiService, GameNFT } from "@/lib/api";
-import dragonSwordImg from "@/assets/dragon-sword.jpg";
-import cyberArmorImg from "@/assets/cyber-armor.jpg";
-import mysticStaffImg from "@/assets/mystic-staff.jpg";
-import battleArenaImg from "@/assets/game-battle-arena.jpg";
+import { apiService } from "@/services/api";
 
 interface NFTContextType {
   ownedNFTs: NFT[];
   listedNFTs: NFT[];
   soldNFTs: NFT[];
   purchaseHistory: NFT[];
-  // TODO: Добавить методы для API
-  // loadUserNFTs: (walletAddress: string) => Promise<void>;
-  // loadUserListings: (walletAddress: string) => Promise<void>;
-  // loadUserSales: (walletAddress: string) => Promise<void>;
-  // buyNFT: (nftId: string, buyerAddress: string) => Promise<void>;
+  loading: boolean;
+  buyNFT: (nftId: string, buyerAddress: string) => Promise<any>;
+  loadUserNFTs: (userAddress: string) => Promise<void>;
   addOwnedNFT: (nft: NFT) => void;
   removeOwnedNFT: (nftId: string) => void;
-  listNFT: (nft: NFT) => void;
-  unlistNFT: (nftId: string) => void;
+  listNFT: (nft: NFT, price: number, sellerAddress: string) => Promise<void>;
+  unlistNFT: (nftId: string, ownerAddress: string) => Promise<void>;
   sellNFT: (nft: NFT) => void;
   addToPurchaseHistory: (nft: NFT) => void;
 }
@@ -42,52 +35,11 @@ interface NFTProviderProps {
 
 export const NFTProvider: React.FC<NFTProviderProps> = ({ children }) => {
   // Начальные NFT пользователя (mock данные)
-  const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([
-    {
-      id: "1",
-      title: "Dragon Sword of Flames",
-      image: dragonSwordImg,
-      price: 2.5,
-      currency: "SOL",
-      game: "Fantasy Quest",
-      rarity: "Legendary",
-      seller: "DragonMaster",
-    },
-    {
-      id: "2",
-      title: "Cyberpunk Armor Set",
-      image: cyberArmorImg,
-      price: 1.8,
-      currency: "SOL",
-      game: "Cyber City",
-      rarity: "Epic",
-      seller: "DragonMaster",
-    },
-    {
-      id: "3",
-      title: "Mystic Staff",
-      image: mysticStaffImg,
-      price: 0.9,
-      currency: "SOL",
-      game: "Magic Realm",
-      rarity: "Rare",
-      seller: "DragonMaster",
-    },
-    {
-      id: "4",
-      title: "Lightning Bow",
-      image: battleArenaImg,
-      price: 1.2,
-      currency: "SOL",
-      game: "Battle Arena",
-      rarity: "Epic",
-      seller: "DragonMaster",
-    },
-  ]);
-
+  const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([]);
   const [listedNFTs, setListedNFTs] = useState<NFT[]>([]);
   const [soldNFTs, setSoldNFTs] = useState<NFT[]>([]);
   const [purchaseHistory, setPurchaseHistory] = useState<NFT[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Сохранение в localStorage с улучшенной обработкой ошибок
   useEffect(() => {
@@ -129,38 +81,118 @@ export const NFTProvider: React.FC<NFTProviderProps> = ({ children }) => {
     }
   }, []);
 
+  // Функция для преобразования NFTItem в NFT формат
+  const convertToNFT = (item: any): NFT => ({
+    id: item.id.toString(),
+    title: item.name,
+    image: item.image || "/placeholder.svg",
+    price: item.price || 0,
+    currency: "SOL",
+    game: item.game,
+    rarity: item.rarity || "Common",
+    seller: item.seller || "Unknown",
+  });
+
+  // Загрузить NFT пользователя с сервера (один раз при загрузке)
+  const loadUserNFTs = async (userAddress: string) => {
+    if (!userAddress || loading) return; // Предотвращаем повторные вызовы
+    
+    try {
+      setLoading(true);
+      
+      // Загружаем принадлежащие NFT
+      const ownedResponse = await apiService.getUserOwnedNFTs(userAddress);
+      if (ownedResponse.success) {
+        const convertedOwned = ownedResponse.nfts.map(convertToNFT);
+        setOwnedNFTs(convertedOwned);
+      }
+
+      // Загружаем NFT на продаже
+      const listedResponse = await apiService.getUserListedNFTs(userAddress);
+      if (listedResponse.success) {
+        const convertedListed = listedResponse.nfts.map(convertToNFT);
+        setListedNFTs(convertedListed);
+      }
+    } catch (error) {
+      console.error('Error loading user NFTs:', error);
+      // В случае ошибки устанавливаем демо данные только один раз
+      if (ownedNFTs.length === 0) {
+        setOwnedNFTs([
+          {
+            id: "demo_1",
+            title: "Dragon Sword",
+            image: "/placeholder.svg",
+            price: 2.5,
+            currency: "SOL",
+            game: "Fantasy Quest",
+            rarity: "Epic",
+            seller: "GameMaster",
+          },
+          {
+            id: "demo_2",
+            title: "Cyber Armor",
+            image: "/placeholder.svg",
+            price: 1.8,
+            currency: "SOL",
+            game: "Neon Runners",
+            rarity: "Rare",
+            seller: "TechNinja",
+          },
+        ]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // TODO: Заменить на API методы
   const addOwnedNFT = (nft: NFT) => {
-    // TODO: API вызов для создания NFT
-    // await apiService.createNFT(nft);
     setOwnedNFTs((prev) => [...prev, nft]);
   };
 
   const removeOwnedNFT = (nftId: string) => {
-    // TODO: API вызов для удаления NFT
-    // await apiService.deleteNFT(nftId);
     setOwnedNFTs((prev) => prev.filter((nft) => nft.id !== nftId));
   };
 
-  const listNFT = (nft: NFT) => {
-    // TODO: API вызов для выставления на продажу
-    // await apiService.listNFT(nft.id, nft.price, nft.currency);
-    setListedNFTs((prev) => [...prev, nft]);
-    // Опционально: убрать из owned, если нужно
-    // removeOwnedNFT(nft.id);
+  const listNFT = async (nft: NFT, price: number, sellerAddress: string) => {
+    try {
+      const response = await apiService.listNFTForSale(nft.id, price, sellerAddress);
+      if (response.success) {
+        // Обновляем локальное состояние
+        const updatedNFT = { ...nft, price };
+        setListedNFTs((prev) => [...prev, updatedNFT]);
+        removeOwnedNFT(nft.id);
+      }
+    } catch (error) {
+      console.error('Error listing NFT:', error);
+      throw error;
+    }
   };
 
-  const unlistNFT = (nftId: string) => {
-    // TODO: API вызов для снятия с продажи
-    // await apiService.unlistNFT(nftId);
-    setListedNFTs((prev) => prev.filter((nft) => nft.id !== nftId));
+  const unlistNFT = async (nftId: string, ownerAddress: string) => {
+    try {
+      const response = await apiService.unlistNFT(nftId, ownerAddress);
+      if (response.success) {
+        // Находим NFT в списке выставленных
+        const nftToUnlist = listedNFTs.find(nft => nft.id === nftId);
+        if (nftToUnlist) {
+          // Убираем из списка на продаже
+          setListedNFTs((prev) => prev.filter((nft) => nft.id !== nftId));
+          // Добавляем в коллекцию
+          addOwnedNFT(nftToUnlist);
+        }
+      }
+    } catch (error) {
+      console.error('Error unlisting NFT:', error);
+      throw error;
+    }
   };
 
   const sellNFT = (nft: NFT) => {
     // TODO: API вызов для продажи NFT
     // await apiService.buyNFT(nft.id, buyerAddress);
     setSoldNFTs((prev) => [...prev, nft]);
-    unlistNFT(nft.id);
+    setListedNFTs((prev) => prev.filter((n) => n.id !== nft.id));
     removeOwnedNFT(nft.id);
   };
 
@@ -168,6 +200,25 @@ export const NFTProvider: React.FC<NFTProviderProps> = ({ children }) => {
     // TODO: API вызов для добавления в историю покупок
     setPurchaseHistory((prev) => [...prev, nft]);
     addOwnedNFT(nft);
+  };
+
+  const buyNFT = async (nftId: string, buyerAddress: string) => {
+    try {
+      const response = await apiService.purchaseNFT(nftId, buyerAddress);
+      if (response.success) {
+        // Найти NFT в каталоге и добавить в коллекцию
+        // После покупки NFT должен исчезнуть из каталога
+        // и появиться в коллекции покупателя
+        console.log('NFT purchased successfully:', response);
+        
+        // Возвращаем успешный результат для обновления UI
+        return response;
+      }
+      throw new Error('Purchase failed');
+    } catch (error) {
+      console.error('Error buying NFT:', error);
+      throw error;
+    }
   };
 
   // TODO: Добавить методы для загрузки данных с API
@@ -222,6 +273,9 @@ export const NFTProvider: React.FC<NFTProviderProps> = ({ children }) => {
     listedNFTs,
     soldNFTs,
     purchaseHistory,
+    loading,
+    buyNFT,
+    loadUserNFTs,
     addOwnedNFT,
     removeOwnedNFT,
     listNFT,

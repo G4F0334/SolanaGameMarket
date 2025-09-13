@@ -1,11 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useNFTStore } from "@/contexts/NFTContext";
 import { useSolanaWallet } from "@/hooks/useSolanaWallet";
 import { toast } from "sonner";
-import React from "react";
+import React, { useState } from "react";
 
 export interface NFT {
   id: string;
@@ -16,6 +16,8 @@ export interface NFT {
   game: string;
   rarity: "Common" | "Rare" | "Epic" | "Legendary";
   seller: string;
+  sellerUsername?: string; // никнейм продавца
+  ownerAddress?: string; // адрес текущего владельца
   description?: string;
   category?: string;
   attributes?: Array<{ trait: string; value: string }>;
@@ -35,14 +37,27 @@ const rarityColors = {
 };
 
 const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
-  const { addToPurchaseHistory } = useNFTStore();
-  const { connected, balance } = useSolanaWallet();
+  const { addToPurchaseHistory, buyNFT } = useNFTStore();
+  const { connected, balance, address, updateBalance } = useSolanaWallet();
+  const [purchasing, setPurchasing] = useState(false);
+  const navigate = useNavigate();
 
-  const handlePurchase = (e: React.MouseEvent) => {
+  // Проверяем, является ли текущий пользователь владельцем NFT
+  const isOwner = address && (nft.ownerAddress === address || nft.seller === address);
+  
+  // Определяем, нужно ли показывать кнопку покупки
+  const shouldShowBuyButton = showBuyButton && !isOwner;
+
+  const handlePurchase = async (e: React.MouseEvent) => {
     e.preventDefault(); // Предотвращаем переход по ссылке
 
     if (!connected) {
       toast.error("Подключите кошелек для покупки NFT");
+      return;
+    }
+
+    if (!address) {
+      toast.error("Адрес кошелька не найден");
       return;
     }
 
@@ -51,14 +66,41 @@ const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
       return;
     }
 
-    // Имитация покупки
-    addToPurchaseHistory(nft);
-    toast.success(
-      `Вы успешно купили ${nft.title} за ${nft.price} ${nft.currency}!`
-    );
+    try {
+      setPurchasing(true);
+      
+      // Используем buyNFT из контекста, который вызывает API
+      const result = await buyNFT(nft.id, address);
+      
+      if (result && result.success) {
+        // Добавляем в историю покупок
+        addToPurchaseHistory(nft);
+        
+        // Обновляем баланс кошелька
+        if (updateBalance) {
+          await updateBalance();
+        }
+        
+        toast.success(
+          `Вы успешно купили ${nft.title} за ${nft.price} ${nft.currency}!`
+        );
 
-    if (onPurchase) {
-      onPurchase(nft);
+        if (onPurchase) {
+          onPurchase(nft);
+        }
+
+        // Редирект на страницу профиля после покупки
+        setTimeout(() => {
+          navigate('/profile');
+        }, 1500);
+      } else {
+        throw new Error(result?.message || 'Purchase failed');
+      }
+    } catch (error) {
+      console.error('Purchase error:', error);
+      toast.error("Ошибка при покупке NFT. Попробуйте еще раз.");
+    } finally {
+      setPurchasing(false);
     }
   };
 
@@ -100,25 +142,30 @@ const NFTCard = ({ nft, showBuyButton = true, onPurchase }: NFTCardProps) => {
                 <div className="text-lg font-bold text-primary">
                   {nft.price} {nft.currency}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  by {nft.seller}
-                </div>
               </div>
 
-              {showBuyButton && (
+              {shouldShowBuyButton && (
                 <Button
                   size="sm"
                   variant="default"
                   className="gradient-solana text-white"
                   onClick={handlePurchase}
-                  disabled={!connected || balance < nft.price}
+                  disabled={!connected || balance < nft.price || purchasing}
                 >
-                  {!connected
+                  {purchasing
+                    ? "Покупка..."
+                    : !connected
                     ? "Подключите кошелек"
                     : balance < nft.price
                     ? "Недостаточно SOL"
                     : "Купить"}
                 </Button>
+              )}
+              
+              {isOwner && (
+                <Badge variant="secondary" className="text-xs">
+                  Ваш NFT
+                </Badge>
               )}
             </div>
           </div>
