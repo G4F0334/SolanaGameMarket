@@ -1,35 +1,42 @@
 # 🎮 Solana Game Marketplace - Umi Integration
 
 ## Описание
+
 Этот проект интегрирует Metaplex Umi для работы с NFT в игровом маркетплейсе на блокчейне Solana.
 
 ## Возможности Umi в проекте
 
 ### 🔧 Инициализация
-- Подключение к Solana RPC
-- Управление кошельком
-- Проверка соединения
+
+-   Подключение к Solana RPC
+-   Управление кошельком
+-   Проверка соединения
 
 ### 🎨 NFT операции
-- Создание коллекций для игр
-- Минтинг NFT игровых предметов
-- Управление метаданными
-- Создание листингов для продажи
+
+-   Создание коллекций для игр
+-   Минтинг NFT игровых предметов
+-   Управление метаданными
+-   Создание листингов для продажи
 
 ### 💰 Маркетплейс
-- Листинг NFT на продажу
-- Покупка/продажа NFT
-- Отслеживание цен и объемов
+
+-   Листинг NFT на продажу
+-   Покупка/продажа NFT
+-   Отслеживание цен и объемов
 
 ## Установка и запуск
 
 ### 1. Установка зависимостей
+
 ```bash
 npm install --no-bin-links
 ```
 
 ### 2. Настройка переменных окружения
+
 Создайте файл `.env`:
+
 ```
 PORT=3000
 NODE_ENV=development
@@ -43,6 +50,7 @@ DB_PASS=password
 ```
 
 ### 3. Настройка Solana для devnet
+
 ```bash
 # Переключаемся на devnet
 solana config set --url devnet
@@ -58,11 +66,13 @@ solana balance
 ```
 
 ### 4. Запуск базы данных
+
 ```bash
 docker-compose up -d
 ```
 
 ### 5. Запуск API сервера (больше НЕ нужен solana-test-validator!)
+
 ```bash
 npm start
 # или для разработки
@@ -74,6 +84,7 @@ npm run dev
 ### 🔧 Solana Management
 
 #### Инициализация Solana клиента
+
 ```http
 POST /api/solana/init
 Content-Type: application/json
@@ -84,11 +95,13 @@ Content-Type: application/json
 ```
 
 #### Проверка статуса
+
 ```http
 GET /api/solana/status
 ```
 
 #### Баланс кошелька
+
 ```http
 GET /api/solana/wallet/balance
 ```
@@ -96,6 +109,7 @@ GET /api/solana/wallet/balance
 ### 🎮 Game Collections
 
 #### Создание коллекции для игры
+
 ```http
 POST /api/solana/collection
 Content-Type: application/json
@@ -114,6 +128,7 @@ Content-Type: application/json
 ### 🎨 NFT Operations
 
 #### Создание NFT для игрового предмета
+
 ```http
 POST /api/solana/mint-nft
 Content-Type: application/json
@@ -125,6 +140,7 @@ Content-Type: application/json
 ```
 
 #### Выставление NFT на продажу
+
 ```http
 POST /api/solana/list-nft
 Content-Type: application/json
@@ -136,6 +152,7 @@ Content-Type: application/json
 ```
 
 #### Получение метаданных NFT
+
 ```http
 GET /api/solana/nft/{mint_address}
 ```
@@ -146,67 +163,67 @@ GET /api/solana/nft/{mint_address}
 
 ```javascript
 // 1. Инициализация Solana
-const initResponse = await fetch('/api/solana/init', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    rpcUrl: 'https://api.devnet.solana.com'
-  })
+const initResponse = await fetch("/api/solana/init", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        rpcUrl: "https://api.devnet.solana.com",
+    }),
 });
 
 // 2. Создание игрового предмета в БД
-const itemResponse = await fetch('/api/items', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: "Legendary Sword",
-    description: "A powerful sword forged by ancient masters",
-    type: "weapon",
-    rarity: "legendary",
-    game: "Epic RPG",
-    level: 50,
-    stats: {
-      damage: 150,
-      speed: 80,
-      durability: 100
-    },
-    image: "https://example.com/sword.png"
-  })
+const itemResponse = await fetch("/api/items", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        name: "Legendary Sword",
+        description: "A powerful sword forged by ancient masters",
+        type: "weapon",
+        rarity: "legendary",
+        game: "Epic RPG",
+        level: 50,
+        stats: {
+            damage: 150,
+            speed: 80,
+            durability: 100,
+        },
+        image: "https://example.com/sword.png",
+    }),
 });
 
 const item = await itemResponse.json();
 
 // 3. Создание коллекции игры (если еще нет)
-const collectionResponse = await fetch('/api/solana/collection', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: "Epic RPG Items",
-    symbol: "ERPI",
-    description: "Legendary items from Epic RPG"
-  })
+const collectionResponse = await fetch("/api/solana/collection", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        name: "Epic RPG Items",
+        symbol: "ERPI",
+        description: "Legendary items from Epic RPG",
+    }),
 });
 
 const collection = await collectionResponse.json();
 
 // 4. Создание NFT для предмета
-const nftResponse = await fetch('/api/solana/mint-nft', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    itemId: item.data.id,
-    collectionMint: collection.data.collectionMint
-  })
+const nftResponse = await fetch("/api/solana/mint-nft", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        itemId: item.data.id,
+        collectionMint: collection.data.collectionMint,
+    }),
 });
 
 // 5. Выставление на продажу
-const listingResponse = await fetch('/api/solana/list-nft', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    itemId: item.data.id,
-    price: 0.5 // 0.5 SOL
-  })
+const listingResponse = await fetch("/api/solana/list-nft", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        itemId: item.data.id,
+        price: 0.5, // 0.5 SOL
+    }),
 });
 ```
 
@@ -214,18 +231,19 @@ const listingResponse = await fetch('/api/solana/list-nft', {
 
 ```javascript
 // Получение всех предметов с NFT
-const nftItems = await fetch('/api/items?hasNft=true');
+const nftItems = await fetch("/api/items?hasNft=true");
 
 // Получение предметов конкретной игры
-const gameItems = await fetch('/api/items/game/Epic%20RPG');
+const gameItems = await fetch("/api/items/game/Epic%20RPG");
 
 // Получение метаданных конкретного NFT
-const nftMetadata = await fetch('/api/solana/nft/mint_address_here');
+const nftMetadata = await fetch("/api/solana/nft/mint_address_here");
 ```
 
 ## Структура данных
 
 ### Игровой предмет с NFT
+
 ```json
 {
   "id": 1,
@@ -259,25 +277,28 @@ const nftMetadata = await fetch('/api/solana/nft/mint_address_here');
 
 ## Безопасность
 
-- ✅ Rate limiting на API endpoints
-- ✅ Helmet для защиты заголовков
-- ✅ CORS настройка
-- ✅ Валидация входных данных
-- ✅ Обработка ошибок
+-   ✅ Rate limiting на API endpoints
+-   ✅ Helmet для защиты заголовков
+-   ✅ CORS настройка
+-   ✅ Валидация входных данных
+-   ✅ Обработка ошибок
 
 ## Мониторинг
 
 ### Health Check
+
 ```http
 GET /api/health
 ```
 
 ### Статистика
+
 ```http
 GET /api/stats
 ```
 
 ### Статус Solana
+
 ```http
 GET /api/solana/status
 ```
@@ -285,6 +306,7 @@ GET /api/solana/status
 ## Разработка
 
 ### Структура проекта
+
 ```
 /
 ├── main.js                 # Основной сервер
@@ -300,9 +322,11 @@ GET /api/solana/status
 ```
 
 ### Логирование
+
 API логирует все запросы и ошибки. Для отладки Umi операций включено подробное логирование.
 
 ### Тестирование
+
 ```bash
 # Запуск тестов
 npm test
