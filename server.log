@@ -1,0 +1,106 @@
+[dotenv@17.2.2] injecting env (9) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+
+  ╔═══════════════════════════════════════════════════════════╗
+  ║                                                           ║
+  ║   🎮 SOLANA GAME MARKETPLACE API 🎮                       ║
+  ║                                                           ║
+  ║   🔥 NFT Gaming Items Marketplace                         ║
+  ║   🔥 Powered by Solana Blockchain                         ║
+  ║   🔥 Create, Trade, Dominate                              ║
+  ║                                                           ║
+  ╚═══════════════════════════════════════════════════════════╝
+
+🔄 Starting Solana Game Marketplace...
+
+🔗 Initializing Solana connection...
+🔍 Parsed array with 64 elements
+✅ Solana connection established
+📡 RPC: https://api.devnet.solana.com
+🔑 Wallet: FXDeGrKqiNKhEo8SCuW1UhLQvGm4kqyUp8DJTmVVBJQL
+🌐 Version: 2.3.8
+🎉 SERVER STARTED SUCCESSFULLY! 🎉
+
+🌐 Server running on: http://localhost:3000
+📚 API Documentation: http://localhost:3000/api/docs
+🏥 Health Check: http://localhost:3000/api/health
+🪙 Solana Wallet: http://localhost:3000/api/solana/wallet
+
+🎮 Ready to handle Solana gaming transactions!
+🔥 Let's build the future of gaming! 🔥
+
+::1 - - [13/Sep/2025:14:30:39 +0000] "POST /api/nft/purchase HTTP/1.1" 400 87 "-" "curl/8.7.1"
+::1 - - [13/Sep/2025:14:30:48 +0000] "POST /api/nft/purchase HTTP/1.1" 400 87 "-" "curl/8.7.1"
+::1 - - [13/Sep/2025:14:30:57 +0000] "GET /api/nft/list HTTP/1.1" 200 1813 "-" "curl/8.7.1"
+💰 Simulating SOL transfer: 1.2 SOL from 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 to FXDeGrKqiNKhEo8SCuW1UhLQvGm4kqyUp8DJTmVVBJQL
+🛒 Purchase successful: NFT 4 bought by 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 for 1.2 SOL
+::1 - - [13/Sep/2025:14:31:06 +0000] "POST /api/nft/purchase HTTP/1.1" 200 564 "-" "curl/8.7.1"
+::1 - - [13/Sep/2025:14:31:14 +0000] "GET /api/nft/list HTTP/1.1" 200 1469 "-" "curl/8.7.1"
+::1 - - [13/Sep/2025:14:31:21 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 200 408 "-" "curl/8.7.1"
+::1 - - [13/Sep/2025:14:31:35 +0000] "GET /api/nft/list HTTP/1.1" 200 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:31:38 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 200 408 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:31:38 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:31:42 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+💰 Simulating SOL transfer: 1.5 SOL from 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 to FXDeGrKqiNKhEo8SCuW1UhLQvGm4kqyUp8DJTmVVBJQL
+🛒 Purchase successful: NFT 6 bought by 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 for 1.5 SOL
+::1 - - [13/Sep/2025:14:31:48 +0000] "POST /api/nft/purchase HTTP/1.1" 200 586 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:31:53 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 200 815 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:31:53 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:31:59 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:31:59 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:09 +0000] "GET /api/nft/list HTTP/1.1" 200 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+💰 Simulating SOL transfer: 1.8 SOL from 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 to FXDeGrKqiNKhEo8SCuW1UhLQvGm4kqyUp8DJTmVVBJQL
+🛒 Purchase successful: NFT 2 bought by 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 for 1.8 SOL
+::1 - - [13/Sep/2025:14:32:16 +0000] "POST /api/nft/purchase HTTP/1.1" 200 553 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:26 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 200 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:26 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:40 +0000] "GET /api/nft/list HTTP/1.1" 200 717 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:44 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:44 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+📦 NFT listed: Lightning Bow by 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 for 1.2 SOL
+::1 - - [13/Sep/2025:14:32:46 +0000] "POST /api/nft/list-for-sale HTTP/1.1" 200 507 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+📦 NFT listed: Fire Shield by 4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 for 1.5 SOL
+::1 - - [13/Sep/2025:14:32:47 +0000] "POST /api/nft/list-for-sale HTTP/1.1" 200 496 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:49 +0000] "GET /api/nft/list HTTP/1.1" 200 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:53 +0000] "POST /api/nft/purchase HTTP/1.1" 400 57 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:32:58 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:33:57 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 200 399 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:33:57 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 200 868 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:14 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:16 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:16 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:16 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:27 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:28 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/owned HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:28 +0000] "GET /api/nft/user/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9/listed HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:34:31 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:35:27 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:37:58 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:41:55 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:42:07 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:42:22 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:42:45 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:00 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:45:44 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:00 +0000] "GET /api/nft/list HTTP/1.1" 304 - "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:46:01 +0000] "GET /api/wallet/balance/4JgfqG3GhbXSm5j3pDCa8d8FiQTLT6nmEohtawD77zq9 HTTP/1.1" 404 134 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36"
+::1 - - [13/Sep/2025:14:53:27 +0000] "GET /api/nft/list HTTP/1.1" 200 1560 "-" "curl/8.7.1"
+::1 - - [13/Sep/2025:14:53:36 +0000] "GET /api/nft/list HTTP/1.1" 200 1560 "-" "curl/8.7.1"
+
+📴 Received SIGTERM. Starting graceful shutdown...
+🔌 Closing Solana connection...
+✅ Shutdown complete. Goodbye!

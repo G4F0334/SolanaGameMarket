@@ -8,6 +8,8 @@ import dotenv from "dotenv";
 import { Connection, PublicKey, Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
 import nftRoutes from "./nft/nft.routes.js";
+import userRoutes from "./users/user.routes.js";
+import walletRoutes from "./wallet/wallet.routes.js";
 import { initializeNFTController } from "./nft/nft.controller.js";
 
 // Load environment variables
@@ -29,17 +31,17 @@ app.use(helmet());
 app.use(cors({
     origin: process.env.NODE_ENV === "production" 
         ? ["https://yourdomain.com"] 
-        : ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"]
+        : ["http://localhost:8080", "http://localhost:3001", "http://localhost:5173"]
 }));
 app.use(compression());
 app.use(morgan("combined"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// 🚦 Rate limiting
+// 🚦 Rate limiting (увеличиваем для разработки)
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
+    windowMs: 15 * 60 * 1000, // 15 минут
+    max: 1000000, // увеличиваем до 1000 запросов
     message: {
         error: "Слишком много запросов, попробуйте позже",
     },
@@ -89,7 +91,10 @@ app.get("/api/solana/wallet", (req, res) => {
 });
 
 // 🎨 NFT API Routes
+// 🚀 Роуты
 app.use("/api/nft", nftRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/wallet", walletRoutes);
 
 app.get("/api/solana/balance", async (req, res) => {
     try {
@@ -182,6 +187,9 @@ app.get("/api/docs", (req, res) => {
                 "POST /api/nft/create": "Create new NFT",
                 "GET /api/nft/info/:mint": "Get NFT information",
                 "GET /api/nft/balance/:mint/:owner?": "Get token balance",
+                "GET /api/nft/list": "Get all NFTs",
+                "GET /api/nft/featured": "Get featured NFTs",
+                "POST /api/nft/purchase": "Purchase NFT",
                 "POST /api/nft/listing/create": "Create marketplace listing",
                 "POST /api/nft/game/register": "Register new game"
             }
@@ -190,6 +198,9 @@ app.get("/api/docs", (req, res) => {
             wallet: "curl http://localhost:3000/api/solana/wallet",
             balance: "curl http://localhost:3000/api/solana/balance",
             health: "curl http://localhost:3000/api/health",
+            featuredNFTs: "curl http://localhost:3000/api/nft/featured",
+            allNFTs: "curl http://localhost:3000/api/nft/list",
+            purchaseNFT: "curl -X POST http://localhost:3000/api/nft/purchase -H 'Content-Type: application/json' -d '{\"nftId\":\"1\",\"buyerAddress\":\"FXDeGrKqiNKhEo8SCuW1UhLQvGm4kqyUp8DJTmVVBJQL\"}'",
             createNFT: "curl -X POST http://localhost:3000/api/nft/create -H 'Content-Type: application/json' -d '{\"name\":\"Dragon Sword\",\"symbol\":\"DSWD\",\"description\":\"Legendary gaming sword\"}'",
             registerGame: "curl -X POST http://localhost:3000/api/nft/game/register -H 'Content-Type: application/json' -d '{\"name\":\"Epic Quest\",\"symbol\":\"EQ\",\"description\":\"Amazing RPG game\"}'"
         }

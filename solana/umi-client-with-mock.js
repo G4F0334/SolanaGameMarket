@@ -1,10 +1,6 @@
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { generateSigner, percentAmount, sol } from "@metaplex-foundation/umi";
 
-/**
- * 🎮 Umi Client с поддержкой мок режима
- */
-
 class UmiClient {
     constructor() {
         this.umi = null;
@@ -12,9 +8,7 @@ class UmiClient {
         this.mockMode = false; // Режим без реального блокчейна
     }
 
-    /**
-     * Инициализация с возможностью мок режима
-     */
+   
     async initialize(rpcUrl = "http://localhost:8899", keypairPath = null, useMockMode = false) {
         try {
             this.mockMode = useMockMode;

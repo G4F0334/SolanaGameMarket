@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet()); // Защита заголовков
 app.use(
     cors({
-        origin: process.env.NODE_ENV === "production" ? ["https://yourdomain.com"] : ["http://localhost:3000", "http://localhost:3001"],
+        origin: process.env.NODE_ENV === "production" ? ["https://yourdomain.com"] : ["http://localhost:8080", "http://localhost:3001"],
     })
 );
 app.use(compression()); // Сжатие ответов

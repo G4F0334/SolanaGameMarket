@@ -1,11 +1,6 @@
 import { umiClient } from "./umi-client.js";
 import Item from "../items/item.entity.js";
 
-/**
- * 🎮 Solana контроллер для работы с NFT через API
- */
-
-// POST/GET /api/solana/init - Инициализация Umi клиента
 export const initializeSolana = async (req, res) => {
     try {
         // Обрабатываем как POST, так и GET запросы

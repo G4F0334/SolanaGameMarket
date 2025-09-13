@@ -1,10 +1,7 @@
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { generateSigner, percentAmount, sol } from "@metaplex-foundation/umi";
 
-/**
- * 🎮 Umi Client для Solana Game Marketplace
- * Управление NFT игровыми предметами через Metaplex Umi
- */
+
 
 class UmiClient {
     constructor() {

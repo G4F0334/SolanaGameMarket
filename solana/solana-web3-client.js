@@ -28,10 +28,7 @@ import {
 } from "@metaplex-foundation/mpl-token-metadata";
 import bs58 from "bs58";
 
-/**
- * 🎮 Solana Web3.js клиент для создания NFT
- * Поддерживает создание NFT через Metaplex и работу с marketplace
- */
+
 class SolanaWeb3Client {
     constructor() {
         this.connection = null;
