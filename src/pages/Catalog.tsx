@@ -42,38 +42,8 @@ const Catalog = () => {
   });
 
   // Fallback NFT данные на случай проблем с сервером
-  const fallbackNFTs: NFT[] = [
-    {
-      id: "fallback_1",
-      title: "Cyber Armor",
-      image: "/cyber-armor.jpg",
-      price: 1.8,
-      currency: "SOL",
-      game: "Neon Runners",
-      rarity: "Epic",
-      seller: "TechNinja",
-    },
-    {
-      id: "fallback_2",
-      title: "Mystic Staff",
-      image: "/mystic-staff.jpg",
-      price: 3.2,
-      currency: "SOL",
-      game: "Magic Realm",
-      rarity: "Legendary",
-      seller: "ArchMage",
-    },
-    {
-      id: "fallback_3",
-      title: "Lightning Bow",
-      image: "/placeholder.svg",
-      price: 1.2,
-      currency: "SOL",
-      game: "Battle Arena",
-      rarity: "Epic",
-      seller: "ElvenArcher",
-    },
-  ];
+  // Удалены фиктивные данные - используем только реальные NFT из базы данных
+  const fallbackNFTs: NFT[] = [];
 
   // Загрузка данных с сервера
   useEffect(() => {
@@ -94,12 +64,12 @@ const Catalog = () => {
         }
       } catch (error) {
         console.error('Error loading NFTs from server:', error);
-        console.warn('Using fallback NFT data');
+        console.warn('No NFTs available - empty catalog');
         
-        // Используем fallback данные
-        setNftItems(fallbackNFTs);
-        setTotalCount(fallbackNFTs.length);
-        setError('Подключение к серверу недоступно. Показаны демо данные.');
+        // Показываем пустой каталог вместо fallback данных
+        setNftItems([]);
+        setTotalCount(0);
+        setError('NFTs на продаже не найдены. Создайте и выставьте NFT на продажу!');
       } finally {
         setLoading(false);
       }

@@ -162,28 +162,7 @@ const NFTDetail = () => {
   }
 
   const similarNFTs: NFT[] = [
-    {
-      id: "2",
-      title: "Lightning Bow",
-      image:
-        "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop",
-      price: 1.2,
-      currency: "SOL",
-      game: "Fantasy Quest",
-      rarity: "Rare",
-      seller: "ElvenArcher",
-    },
-    {
-      id: "4",
-      title: "Fire Staff",
-      image:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=300&fit=crop",
-      price: 1.8,
-      currency: "SOL",
-      game: "Fantasy Quest",
-      rarity: "Epic",
-      seller: "FireMage",
-    },
+    // TODO: Загружать похожие NFT из API
   ];
 
   return (
