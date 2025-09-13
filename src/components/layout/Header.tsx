@@ -70,7 +70,6 @@ const Header = () => {
               >
                 Профиль
               </Link>
-              
             </nav>
           </div>
 

@@ -1,73 +1,169 @@
-# Welcome to your Lovable project
+# 🎮 Game Items Market
 
-## Project info
+> NFT Gaming Items Marketplace powered by Solana Blockchain
 
-**URL**: https://lovable.dev/projects/afa1710f-391b-477f-937f-abab2659183c
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-green.svg)](https://nodejs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue.svg)](https://postgresql.org/)
+[![Solana](https://img.shields.io/badge/Solana-Mainnet-purple.svg)](https://solana.com/)
+[![Express.js](https://img.shields.io/badge/Express.js-5.x-black.svg)](https://expressjs.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com/)
 
-## How can I edit this code?
+## 🚀 Описание
 
-There are several ways of editing your application.
+**Game Items Market** - это современный маркетплейс для торговли игровыми предметами в виде NFT на блокчейне Solana. Проект включает в себя смарт-контракты для минтинга NFT, API для управления предметами и базу данных для хранения метаданных.
 
-**Use Lovable**
+### ✨ Основные возможности
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/afa1710f-391b-477f-937f-abab2659183c) and start prompting.
+- 🎯 **Создание игровых предметов** - простое добавление новых предметов
+- 🔗 **NFT интеграция** - минтинг предметов как NFT на Solana
+- 🛒 **Маркетплейс** - покупка и продажа игровых предметов
+- 📊 **API управления** - полноценный REST API
+- 🗄️ **База данных** - PostgreSQL для хранения метаданных
+- 🐳 **Docker** - простое развертывание
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🏗️ Архитектура
 
-**Use your preferred IDE**
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Smart Contract │    │   Express API   │    │   PostgreSQL    │
+│     (Anchor)    │◄──►│   (Node.js)     │◄──►│   Database      │
+│                 │    │                 │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         ▲                        ▲                        ▲
+         │                        │                        │
+         ▼                        ▼                        ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Solana        │    │   RESTful API   │    │   Items         │
+│   Blockchain    │    │   Endpoints     │    │   Metadata      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-Follow these steps:
+## 🛠️ Технологический стек
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Backend
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework
+- **Sequelize** - ORM для работы с базой данных
+- **PostgreSQL** - Основная база данных
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Blockchain
+- **Solana** - Блокчейн платформа
+- **Anchor** - Framework для Solana контрактов
+- **Metaplex** - NFT стандарт
+- **@solana/web3.js** - JavaScript SDK
 
-# Step 3: Install the necessary dependencies.
-npm i
+### DevOps
+- **Docker** - Контейнеризация
+- **Docker Compose** - Оркестрация
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🚀 Быстрый старт
+
+### Предварительные требования
+
+- **Node.js** 18+ 
+- **Docker** и **Docker Compose**
+- **Solana CLI** (для разработки контрактов)
+- **Anchor CLI** (для смарт-контрактов)
+
+### 1. Клонирование репозитория
+
+```bash
+git clone https://github.com/G4F0334/SolanaGameMarket.git
+cd SolanaGameMarket
+```
+
+### 2. Настройка окружения
+
+Создайте файл `.env`:
+
+```env
+POSTGRES_DB=test_db
+POSTGRES_USER=root
+POSTGRES_PASSWORD=qwerty
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+```
+
+## 🖥️ Запуск Сервера
+
+### 1. Установка зависимостей
+
+```bash
+npm install
+```
+
+### 2. Запуск базы данных
+
+```bash
+docker compose up -d
+```
+
+### 3. Запуск сервера
+
+```bash
+npm start
+# или для разработки с автоперезагрузкой
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### 4. Готово! 🎉
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Сервер запущен на: **http://localhost:3000**
 
-**Use GitHub Codespaces**
+## 🌐 Запуск Клиента
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 1. Установка зависимостей
 
-## What technologies are used for this project?
+```bash
+npm install
+```
 
-This project is built with:
+### 2. Запуск в режиме разработки
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+npm run dev
+```
 
-## How can I deploy this project?
+Клиент будет доступен в браузере.
 
-Simply open [Lovable](https://lovable.dev/projects/afa1710f-391b-477f-937f-abab2659183c) and click on Share -> Publish.
+## ⚡ Развертывание Контрактов
 
-## Can I connect a custom domain to my Lovable project?
+### 1. Сборка контрактов
 
-Yes, you can!
+```bash
+anchor build
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### 2. Тестирование
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```bash
+anchor test
+```
+
+### 3. Развертывание
+
+```bash
+anchor deploy
+```
+
+## 🐳 Docker
+
+### Запуск через Docker Compose
+
+```bash
+# Запуск PostgreSQL
+docker compose up -d
+
+# Проверка статуса
+docker compose ps
+
+# Просмотр логов
+docker compose logs -f
+
+# Остановка
+docker compose down
+```
+
+</div>
